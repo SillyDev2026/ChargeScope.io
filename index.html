@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1022">
-  <meta name="description" content="ChargeScope v3.2 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
-  <meta property="og:title" content="ChargeScope v3.2 — Charging speed, explained">
+  <meta name="description" content="ChargeScope v3.3 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
+  <meta property="og:title" content="ChargeScope v3.3 — Charging speed, explained">
   <meta property="og:description" content="Compare phones, chargers and charging ranges with an editable, transparent estimator.">
-  <title>ChargeScope v3.2 — Universal Charging Calculator</title>
+  <title>ChargeScope v3.3 — Universal Charging Calculator</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
@@ -16,7 +16,7 @@
   <a class="skip-link" href="#calculator">Skip to calculator</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v3.2</span></span></a>
+      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v3.3</span></span></a>
       <nav class="nav" aria-label="Main navigation"><a href="#calculator">Calculator</a><a href="#planner">Planner</a><a href="#lab">Real tests</a><a href="#compare">Compare</a><a href="#catalog">Devices</a><a href="#guide">Guide</a></nav>
       <button type="button" class="icon-button theme-button" id="themeToggle" aria-label="Switch color theme" title="Switch color theme">☼</button>
     </div>
@@ -25,14 +25,14 @@
   <main id="top">
     <section class="hero-v3 container" aria-label="ChargeScope overview">
       <div class="hero-intro">
-        <div class="eyebrow"><span class="live-dot"></span> THE CHARGING INTELLIGENCE WORKSPACE <span class="version-text">/ VERSION 3.1</span></div>
+        <div class="eyebrow"><span class="live-dot"></span> THE CHARGING INTELLIGENCE WORKSPACE <span class="version-text">/ VERSION 3.3</span></div>
         <h1>Understand every<br><span class="gradient-text">minute of charging.</span></h1>
         <p>Compare charger speeds, plan your next charge, and learn from your own real-world tests. One clean workspace for virtually any phone.</p>
         <div class="hero-cta-row"><a class="hero-main-cta" href="#calculator">Explore your charging speed <span aria-hidden="true">↗</span></a><a class="hero-secondary-cta" href="#lab">Record a real test →</a></div>
         <div class="trust-strip"><span>● Runs in your browser</span><span>◈ Any phone brand</span><span>◎ Private test log</span></div>
       </div>
       <div class="hero-console" aria-hidden="true">
-        <div class="console-header"><span class="console-label">● CHARGESCOPE LAB</span><span>v3.2 / MODEL</span></div>
+        <div class="console-header"><span class="console-label">● CHARGESCOPE LAB</span><span>v3.3 / MODEL</span></div>
         <div class="console-topline"><div><small>YOUR NEXT CHARGE</small><strong>20<span>%</span> <em>→</em> 80<span>%</span></strong></div><div class="console-charge-symbol">ϟ</div></div>
         <div class="console-graph"><svg viewBox="0 0 430 140" preserveAspectRatio="none"><defs><linearGradient id="heroLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4bc6cc"/><stop offset="100%" stop-color="#a9b4ff"/></linearGradient></defs><path d="M2 124 C45 115 73 91 107 66 S168 26 216 16 S325 5 428 3" stroke="url(#heroLine)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M2 124 C45 115 73 91 107 66 S168 26 216 16 S325 5 428 3 V140 H2 Z" fill="#75e4d6" fill-opacity=".055"/><path d="M0 140H430M0 70H430M0 0H430" stroke="currentColor" stroke-opacity=".13" stroke-dasharray="5 6"/></svg></div>
         <div class="console-bottom"><div><small>01 / PREDICT</small><strong>Estimate time</strong></div><div><small>02 / TEST</small><strong>Log results</strong></div><div><small>03 / IMPROVE</small><strong>Personalize</strong></div></div>
@@ -41,13 +41,23 @@
     <div class="container"><div class="section-divider"></div></div>
 
     <section id="calculator" class="container section">
-      <div class="section-title"><div><span class="overline">01 / CALCULATOR</span><h2>Calculate your charge</h2><p>Choose a phone, charger and battery range. Customize every specification when needed.</p></div><span class="model-tag">ESTIMATION ENGINE 3.0</span></div>
+      <div class="section-title"><div><span class="overline">01 / CALCULATOR</span><h2>Calculate your charge</h2><p>Choose a phone, charger and battery range. Customize every specification when needed.</p></div><span class="model-tag">ESTIMATION ENGINE 3.3</span></div>
       <div class="calc-grid">
         <form class="panel form-panel" id="calcForm" novalidate>
-          <div class="panel-heading"><div class="panel-icon">▣</div><div><h3>Device profile</h3><p>Select your phone or create a custom profile.</p></div></div>
+          <div class="panel-heading"><div class="panel-icon">▣</div><div><h3>Device profile</h3><p>Find your phone instantly, or enter a custom profile.</p></div></div>
+          <button type="button" id="openPhoneSearch" class="phone-finder-launch">
+            <span class="finder-icon" aria-hidden="true">⌕</span>
+            <span class="finder-label"><strong>Search all phones</strong><small>Find by model or brand • Tap to open</small></span>
+            <span class="finder-shortcut" aria-hidden="true">/</span>
+          </button>
           <div class="form-row">
             <label class="field"><span>Brand</span><select id="brandSelect" aria-label="Phone brand"></select></label>
             <label class="field"><span>Phone / tablet</span><select id="deviceSelect" aria-label="Phone model"></select></label>
+          </div>
+          <div class="recent-devices" aria-label="Recently used phones">
+            <div class="recent-heading"><strong>Recently used</strong><button id="recentClear" class="text-action" type="button">Clear</button></div>
+            <div id="recentPhoneActions" class="recent-actions" hidden></div>
+            <div id="recentPhones" class="recent-phone-list"><p class="recent-empty">Your recently viewed models will appear here.</p></div>
           </div>
           <div class="quick-picks" aria-label="Quick phone profiles"><span>QUICK PICK</span><button type="button" data-quick-device="moto-razr-ultra-2026">Razr Ultra</button><button type="button" data-quick-device="samsung-s25-ultra">Galaxy Ultra</button><button type="button" data-quick-device="apple-iphone-16-pro-max">iPhone Pro Max</button><button type="button" data-quick-device="pixel-10-pro-xl">Pixel Pro XL</button></div><div class="inline-actions"><button type="button" class="text-action" id="newDevice">+ New custom device</button><button type="button" class="text-action" id="saveDevice">Save profile</button></div>
           <p id="deviceSpecNotice" class="device-spec-notice" role="status" hidden></p>
@@ -102,6 +112,10 @@
               <div class="stat"><span>Battery gain</span><strong id="gainStat">—</strong></div>
               <div class="stat"><span>Adapter power limit</span><strong id="powerStat">—</strong></div>
               <div class="stat"><span>Battery energy added</span><strong id="energyStat">—</strong></div>
+            </div>
+            <div class="power-explainer" aria-live="polite">
+              <div class="power-explainer-icon" aria-hidden="true">⚡</div>
+              <div><strong id="powerLimitLabel">Charging power explanation</strong><p id="powerLimitExplanation">Select a device and charger to see the limiting factor.</p></div>
             </div>
             <div class="curve-heading"><div><h4>Charge taper profile</h4><p>Illustrative battery percentage over time</p></div><span class="mini-pill">SIMULATED</span></div>
             <div class="chart-wrap"><svg id="curve" viewBox="0 0 640 265" role="img" aria-label="Illustrative charging curve over time"><title>Estimated charging curve</title></svg></div>
@@ -208,7 +222,7 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v3.2 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v3.3 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
   <dialog id="specDialog" class="spec-dialog" aria-labelledby="specDialogTitle">
     <div class="spec-dialog-shell">
       <div class="spec-dialog-heading">
@@ -229,6 +243,24 @@
       <p class="micro-note">Published adapter recommendations and claimed charge times are not independently measured device input limits. Phone models may vary by country, hardware revision, charger and firmware.</p>
     </div>
   </dialog>
+  <dialog id="phoneSearchDialog" class="phone-search-dialog" aria-labelledby="phoneSearchTitle">
+    <div class="phone-finder-shell">
+      <div class="finder-dialog-heading">
+        <div><span class="overline">QUICK PHONE FINDER</span><h2 id="phoneSearchTitle">Find your device</h2><p>Type any brand or model. Recently used and sourced phones appear first.</p></div>
+        <button type="button" id="phoneSearchClose" class="icon-button" aria-label="Close phone finder">×</button>
+      </div>
+      <label class="phone-search-box"><span aria-hidden="true">⌕</span><input id="phoneSearchInput" type="search" placeholder="Search Motorola, Pixel, iPhone, Galaxy…" aria-label="Search all phones" autocomplete="off"><kbd>Enter</kbd></label>
+      <p id="phoneSearchCount" class="phone-search-count" aria-live="polite">Search the catalog</p>
+      <div id="phoneSearchResults" class="phone-search-results" role="group" aria-label="Phone results"></div>
+      <p class="finder-footnote">Can’t find your exact model? Add it using <strong>New custom device</strong> in the calculator. Unknown specifications are never guessed.</p>
+    </div>
+  </dialog>
+  <nav class="mobile-dock" aria-label="Mobile shortcuts">
+    <a href="#calculator"><span aria-hidden="true">ϟ</span>Estimate</a>
+    <a href="#planner"><span aria-hidden="true">◷</span>Plan</a>
+    <a href="#catalog"><span aria-hidden="true">▤</span>Phones</a>
+    <a href="#lab"><span aria-hidden="true">◎</span>My tests</a>
+  </nav>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script type="module" src="./app.js"></script>
 </body>
