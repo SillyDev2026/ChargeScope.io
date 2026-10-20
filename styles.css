@@ -426,3 +426,92 @@ html,body{overflow-x:clip}
 @media(max-width:335px){
  .catalog-filters{grid-template-columns:1fr}
 }
+
+/* ChargeScope v3.2 — evidence-first catalog and refinement */
+:root{
+  --bg:#0a111b;--panel:#131e2c;--panel2:#1b2938;--stroke:#304052;
+  --accent:#77dbc9;--accent2:#a2b9fa;--text:#f4f8fd;--muted:#acbaca;
+  --shadow:0 13px 38px rgba(0,0,0,.13);--control:#111c2b
+}
+html[data-theme=light]{
+  --bg:#f5f8fb;--panel:#fff;--panel2:#eef3f8;--stroke:#dbe5ed;
+  --accent:#0b8079;--accent2:#506fb3;--text:#1a2735;--muted:#607285;
+  --shadow:0 10px 30px rgba(20,40,70,.055);--control:#fff
+}
+.panel,.catalog-filter-panel{border-radius:19px}
+.site-header{border-color:var(--stroke)}
+.hero-v3{padding-bottom:58px}
+.hero-v3 h1{font-weight:860;letter-spacing:-3.5px}
+.section-title{margin-bottom:25px}
+.section-title p{line-height:1.7}
+.device-card{border-radius:16px;position:relative}
+.directory-card{gap:12px;align-content:start}
+.directory-card .device-card-top{gap:10px}
+.directory-card .device-brand{font-size:10px;letter-spacing:1px}
+.directory-card h3{font-size:15px;line-height:1.3}
+.directory-card .device-actions{margin-top:auto;padding-top:4px}
+.catalog-overview>div{border-radius:15px;padding:20px}
+.catalog-overview strong{font-variant-numeric:tabular-nums;letter-spacing:-.9px}
+.catalog-explanation{max-width:950px;font-size:12px;line-height:1.8}
+.catalog-filter-panel{padding:22px;gap:17px}
+.catalog-filters .field select{min-height:44px}
+.directory-status,.directory-year{font-size:10px;line-height:1.3}
+.directory-status.manufacturer,.micro-tag.source-manufacturer{color:var(--mint);background:color-mix(in srgb,var(--mint) 12%,var(--panel2))}
+.directory-status.partial,.micro-tag.source-partial{color:#e1c481;background:rgba(201,164,83,.08)}
+.directory-status.needs-specs{color:var(--muted)}
+.card-evidence{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.card-evidence-bar{width:100%;height:5px;background:var(--panel2);border-radius:30px;overflow:hidden}
+.card-evidence-bar>div{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:30px}
+.card-evidence span{color:var(--muted);font-size:10px;line-height:1.4}
+.directory-card.needs-specs .card-evidence-bar>div{background:var(--stroke)}
+.source-details-button{background:transparent;border:1px solid var(--stroke);border-radius:8px;padding:7px 11px;min-height:36px;color:var(--text);font-size:11px;font-weight:730}
+.source-details-button:hover,.source-details-button:focus-visible{border-color:var(--accent);background:var(--panel2)}
+.directory-card .load-device{background:color-mix(in srgb,var(--accent) 12%,var(--panel2));border-color:color-mix(in srgb,var(--accent) 35%,var(--stroke))}
+.source-evidence{border:1px solid var(--stroke);padding:15px 16px;border-radius:11px;background:linear-gradient(110deg,color-mix(in srgb,var(--accent) 8%,var(--panel2)),var(--panel2));margin:16px 0}
+.source-evidence-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px}
+.source-evidence-header>span:last-child{font-size:10px;color:var(--muted)}
+.source-evidence p{font-size:11px;line-height:1.7;margin-top:10px;color:var(--muted)}
+.source-evidence-actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:9px}
+.source-evidence-actions a{text-decoration:underline;text-underline-offset:3px;color:var(--accent);font-size:11px;font-weight:730}
+.micro-tag{border:1px solid var(--stroke);border-radius:7px;padding:6px 9px;font-size:10px;font-weight:760;letter-spacing:.05em}
+.micro-tag.source-edited{color:#f4c38c;background:rgba(214,142,63,.09)}
+.micro-tag.source-needs-specs,.micro-tag.source-custom{color:var(--muted);background:var(--panel2)}
+.device-spec-notice{line-height:1.75;margin-bottom:10px}
+.spec-dialog{padding:0;width:min(640px,calc(100% - 28px));max-width:640px;max-height:min(88dvh,850px);border:1px solid var(--stroke);border-radius:19px;background:var(--panel);color:var(--text);box-shadow:0 32px 100px rgba(0,0,0,.42);overflow:auto;overscroll-behavior:contain}
+.spec-dialog::backdrop{background:rgba(4,9,18,.72);backdrop-filter:blur(4px)}
+.spec-dialog-shell{padding:27px;min-width:0}
+.spec-dialog-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:1px solid var(--stroke);padding-bottom:18px;margin-bottom:21px}
+.spec-dialog-heading h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.8px;margin:8px 0}
+.spec-dialog-heading p{font-size:12px;line-height:1.55}
+.spec-dialog-heading button{flex-shrink:0}
+.spec-dialog-section{display:grid;gap:13px}
+.spec-dialog-section>.micro-tag{justify-self:start}
+.spec-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.spec-fact{display:flex;flex-direction:column;gap:7px;min-width:0;background:var(--panel2);border:1px solid var(--stroke);border-radius:11px;padding:14px}
+.spec-fact span{font-size:11px;color:var(--muted)}
+.spec-fact strong{font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+.spec-evidence{font-size:12px;line-height:1.75}
+.spec-dialog-bottom{border-top:1px solid var(--stroke);padding:18px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}
+.spec-dialog-bottom>.primary-button,.spec-dialog-bottom>.secondary-button{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;flex:1;min-height:44px;text-align:center}
+#specDialog .micro-note{font-size:11px;line-height:1.75}
+.catalog-toolbar .text-action{min-height:34px}
+@media(max-width:800px){
+ .spec-dialog{width:min(640px,calc(100% - 24px))}
+ .spec-dialog-shell{padding:20px}
+ .catalog-filter-panel{padding:16px}
+}
+@media(max-width:520px){
+ .catalog-overview>div{padding:14px}
+ .catalog-overview strong{font-size:21px}
+ .spec-dialog{max-height:93dvh;width:calc(100% - 16px);border-radius:15px}
+ .spec-dialog-shell{padding:17px}
+ .spec-facts{gap:7px}
+ .spec-fact{padding:12px 10px}
+ .spec-fact strong{font-size:13px}
+ .spec-dialog-bottom{flex-direction:column}
+ .spec-dialog-bottom>*{width:100%}
+ .source-evidence{padding:13px}
+ .source-evidence-actions{gap:9px}
+ .catalog-filters{gap:9px}
+}
+@media(prefers-reduced-motion:reduce){.directory-card{transform:none!important}}
