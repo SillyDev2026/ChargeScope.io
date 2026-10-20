@@ -41,9 +41,9 @@ test('search filters by year, brand, status and favorites',()=>{
   const brand=queryCatalog(DEVICES,{year:'2026',brand:'Apple'});
   assert.ok(brand.length>=2);
   assert.ok(brand.every(x=>x.brand==='Apple'&&x.year===2026));
-  const filtered=queryCatalog(DEVICES,{query:'pixel 11',status:'needs-specs'});
+  const filtered=queryCatalog(DEVICES,{query:'pixel 11',status:'partial'});
   assert.ok(filtered.some(x=>x.model==='Pixel 11 Pro'));
-  assert.ok(filtered.every(x=>x.specStatus==='needs-specs'));
+  assert.ok(filtered.every(x=>x.specStatus==='partial'));
   const starred=queryCatalog(DEVICES,{favoritesOnly:true,favorites:['moto-razr-ultra-2026']});
   assert.equal(starred.length,1);
 });
