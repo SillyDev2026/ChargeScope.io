@@ -476,7 +476,7 @@ function init(){
   populateBrands(getDevice(launchId)?.brand||'Motorola');selectDevice(launchId);
   $('brandSelect').addEventListener('change',()=>{
     const brand=$('brandSelect').value;
-    const first=allDevices().find(d=>d.brand===brand);
+    const first=allDevices().find(d=>d.brand===brand&&hasChargeSpecs(d))||allDevices().find(d=>d.brand===brand);
     if(first)selectDevice(first.id);else{selectedId=null;populateModels(null);$('editBrand').value=brand;$('editModel').value='My device';update();}
   });
   $('deviceSelect').addEventListener('change',()=>{
