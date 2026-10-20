@@ -1,6 +1,6 @@
-/* ChargeScope v3.0: scope-limited caching with correct offline behavior. */
-const CACHE='chargescope-v3.0.0';
-const ASSETS=['./','./index.html','./styles.css','./core.mjs','./planner.mjs','./lab.mjs','./lab-ui.mjs','./devices.mjs','./app.js','./icon.svg','./manifest.webmanifest'];
+/* ChargeScope v3.1: scope-limited caching with correct offline behavior. */
+const CACHE='chargescope-v3.1.0';
+const ASSETS=['./','./index.html','./styles.css','./core.mjs','./planner.mjs','./lab.mjs','./lab-ui.mjs','./devices.mjs','./catalog-directory.mjs','./catalog-utils.mjs','./app.js','./icon.svg','./manifest.webmanifest'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
