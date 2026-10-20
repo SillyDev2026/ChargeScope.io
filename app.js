@@ -1,6 +1,7 @@
 import {estimateCharge, normalizeDevice, formatMinutes, VERSION} from './core.mjs';
 import {DEVICES} from './devices.mjs';
 import {setupPlanner, renderPlanner} from './planner.mjs';
+import {setupLab, renderLab} from './lab-ui.mjs';
 
 const $ = id => document.getElementById(id);
 const LIST_KEY = 'chargescope-v2-devices';
@@ -112,12 +113,12 @@ function update() {
   try {
     const result=estimateCharge(readCurrentDevice(),readOptions());
     latest=result;showError('');
-    renderResult(result);renderComparison();renderPlanner(result);
+    renderResult(result);renderComparison();renderPlanner(result);renderLab(result);
   } catch(e) {
     latest=null;showError(e.message||'Check your inputs');
     $('timeRange').textContent='—';$('centralTime').textContent='Enter valid specifications to calculate.';
     for(const id of ['gainStat','powerStat','energyStat'])$(id).textContent='—';
-    $('curve').replaceChildren();$('warnings').replaceChildren();renderComparison();renderPlanner(null);
+    $('curve').replaceChildren();$('warnings').replaceChildren();renderComparison();renderPlanner(null);renderLab(null);
   }
 }
 function renderResult(r){
@@ -126,6 +127,8 @@ function renderResult(r){
   $('gainStat').textContent=(r.options.end-r.options.start)+'%';
   $('powerStat').textContent=r.adapterLimitW+'W';
   $('energyStat').textContent=r.deliveredWh+'Wh';
+  $('orbEnd').textContent=r.options.end+'%';
+  $('batteryOrb').style.background='conic-gradient(var(--accent) 0 '+r.options.end+'%, var(--panel2) '+r.options.end+'% 100%)';
   $('chartStart').textContent=r.options.start+'%';$('chartEnd').textContent=r.options.end+'%';
   drawCurve(r);
   const warning=$('warnings');warning.replaceChildren();
@@ -314,6 +317,7 @@ function setTheme(mode){
 function init(){
   let mode='dark';try{mode=localStorage.getItem(THEME_KEY)||'dark';}catch(_){}
   setTheme(mode==='light'?'light':'dark');
+  setupLab({getResult:()=>latest,toast:notify});
   setupPlanner({setChargerW:(watts)=>{
     $('chargerW').value=String(watts);
     update();
@@ -330,6 +334,12 @@ function init(){
     if($('deviceSelect').value==='__custom__'){selectedId=null;$('editBrand').value=$('brandSelect').value;$('editModel').value='My device';update();}
     else selectDevice($('deviceSelect').value);
   });
+  for(const chip of document.querySelectorAll('[data-quick-device]')){
+    chip.addEventListener('click',()=>{
+      const d=getDevice(chip.dataset.quickDevice);if(!d)return;
+      populateBrands(d.brand);selectDevice(d.id);notify(d.model+' selected');
+    });
+  }
   $('newDevice').addEventListener('click',newDevice);
   $('saveDevice').addEventListener('click',saveCurrentDevice);
   for(const id of fieldIds)$(id).addEventListener('input',update);
