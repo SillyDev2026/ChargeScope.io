@@ -23,7 +23,7 @@ test('sweet spot picks smallest charger within tolerance of modeled fastest',()=
   assert.equal(chargerSweetSpot([]),null);
 });
 
-test('milestones respect the user's selected charge range',()=>{
+test("milestones respect the user's selected charge range",()=>{
   const rows=chargingMilestones(d,opts);
   assert.deepEqual(rows.map(x=>x.percent),[25,50,75,80]);
   assert.ok(rows.every((x,i)=>i===0||x.minutes>rows[i-1].minutes));
