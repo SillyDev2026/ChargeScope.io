@@ -2,10 +2,12 @@ import {estimateCharge, normalizeDevice, formatMinutes, VERSION} from './core.mj
 import {DEVICES} from './devices.mjs';
 import {setupPlanner, renderPlanner} from './planner.mjs';
 import {setupLab, renderLab} from './lab-ui.mjs';
+import {CATALOG_PAGE_SIZE,queryCatalog,catalogStatistics,STATUS_LABELS,hasChargeSpecs} from './catalog-utils.mjs';
 
 const $ = id => document.getElementById(id);
 const LIST_KEY = 'chargescope-v2-devices';
 const THEME_KEY = 'chargescope-v2-theme';
+const FAV_KEY = 'chargescope-v3.1-favorite-devices';
 const defaultId = 'moto-razr-ultra-2026';
 const fieldIds = ['editBrand','editModel','batteryMah','batteryV','wiredW','wirelessW','chargeMethod','chargerW','cableW','compatibility','temperature','activity'];
 const form = $('calcForm');
@@ -13,6 +15,21 @@ let savedDevices = readSaved();
 let selectedId = defaultId;
 let latest = null;
 let toastTimer;
+let catalogVisible=CATALOG_PAGE_SIZE;
+let favoriteIds=readFavorites();
+function readFavorites(){try{const v=JSON.parse(localStorage.getItem(FAV_KEY)||'[]');return Array.isArray(v)?v.filter(x=>typeof x==='string').slice(0,500):[];}catch(_){return [];}}
+function toggleFavorite(id){
+  const saved=favoriteIds;
+  favoriteIds=favoriteIds.includes(id)?favoriteIds.filter(x=>x!==id):[...favoriteIds,id];
+  try{localStorage.setItem(FAV_KEY,JSON.stringify(favoriteIds));}catch(_){favoriteIds=saved;notify('Unable to save favorites on this device.');return;}
+  renderCatalog(false);
+}
+function updateBrandFilter(){
+  const select=$('catalogBrand'),current=select.value;
+  const brands=[...new Set(allDevices().map(d=>d.brand))].sort((a,b)=>a.localeCompare(b));
+  select.replaceChildren(option('all','All brands'),...brands.map(b=>option(b,b)));
+  select.value=brands.includes(current)?current:'all';
+}
 
 function readSaved() {
   let values;
@@ -43,7 +60,18 @@ function notify(message) {
 
 function setDeviceFields(d) {
   $('editBrand').value=d.brand;$('editModel').value=d.model;
-  for (const field of ['batteryMah','batteryV','wiredW','wirelessW']) $(field).value=d[field];
+  for (const field of ['batteryMah','batteryV','wiredW','wirelessW']) $(field).value=d[field]??'';
+  const notice=$('deviceSpecNotice');
+  if(d.specStatus==='needs-specs'){
+    notice.hidden=false;
+    notice.textContent='Charging specifications have not been confirmed for this model. Enter the battery size and rated wired/wireless limits for your regional variant before calculating.';
+  }else if(d.specStatus==='example'){
+    notice.hidden=false;
+    notice.textContent='Editable example: verify the battery and charging specifications for your exact phone and charger.';
+  }else if(d.specStatus==='manufacturer'){
+    notice.hidden=false;
+    notice.textContent='Manufacturer-backed charging specifications for the indicated region. Other regional versions or charging protocols may differ.';
+  }else notice.hidden=true;
 }
 function populateBrands(preferred) {
   const current=preferred||$('brandSelect').value||'Motorola';
@@ -203,26 +231,70 @@ function renderComparison(){
   });
 }
 
-function renderCatalog() {
-  const query=$('catalogSearch').value.trim().toLocaleLowerCase();
-  const devices=allDevices().filter(d=>(d.brand+' '+d.model).toLocaleLowerCase().includes(query));
-  $('catalogCount').textContent=devices.length+' device'+(devices.length!==1?'s':'');
+function renderCatalog(reset=true) {
+  if(reset)catalogVisible=CATALOG_PAGE_SIZE;
+  const all=allDevices();
+  const stats=catalogStatistics(all);
+  $('catalogTotal').textContent=stats.total.toLocaleString();
+  $('catalogBrands').textContent=stats.brands.toLocaleString();
+  $('catalogReady').textContent=stats.ready.toLocaleString();
+  const matches=queryCatalog(all,{
+    query:$('catalogSearch').value,year:$('catalogYear').value,
+    brand:$('catalogBrand').value,status:$('catalogStatus').value,
+    sort:$('catalogSort').value,favoritesOnly:$('catalogFavoritesOnly').checked,
+    favorites:favoriteIds
+  });
+  $('catalogCount').textContent=matches.length+' matching model'+(matches.length===1?'':'s');
+  const displayed=matches.slice(0,catalogVisible);
+  $('catalogPageStatus').textContent=matches.length?'Showing '+displayed.length+' of '+matches.length+' matching models':'No models match your filters.';
+  $('catalogLoadMore').hidden=displayed.length>=matches.length;
   const grid=$('catalogGrid');grid.replaceChildren();
-  if(!devices.length){const empty=document.createElement('p');empty.className='empty-state';empty.textContent='No matching devices. Add your own using “New custom device” above.';grid.append(empty);return;}
-  for(const d of devices){
-    const card=document.createElement('article');card.className='device-card';
+  if(!matches.length){
+    const empty=document.createElement('div');
+    empty.className='empty-state';
+    empty.textContent='No matching phones. Try changing the filters or create a custom model in the calculator.';
+    grid.append(empty);return;
+  }
+  for(const d of displayed){
+    const card=document.createElement('article');card.className='device-card directory-card';
+    if(d.specStatus==='needs-specs')card.classList.add('needs-specs');
     const top=document.createElement('div');top.className='device-card-top';
-    const names=document.createElement('div');const brand=document.createElement('span');brand.className='device-brand';brand.textContent=d.brand;
-    const title=document.createElement('h3');title.textContent=d.model;names.append(brand,title);
-    const icon=document.createElement('span');icon.className='device-icon';icon.textContent='▥';icon.setAttribute('aria-hidden','true');top.append(names,icon);
+    const names=document.createElement('div');
+    const brand=document.createElement('span');brand.className='device-brand';brand.textContent=d.brand;
+    const title=document.createElement('h3');title.textContent=d.model;
+    names.append(brand,title);
+    const fave=document.createElement('button');fave.type='button';fave.className='favorite-device';
+    const isFav=favoriteIds.includes(d.id);
+    fave.textContent=isFav?'★':'☆';fave.setAttribute('aria-pressed',String(isFav));
+    fave.setAttribute('aria-label',(isFav?'Remove':'Add')+' '+d.model+(isFav?' from':' to')+' favorites');
+    fave.addEventListener('click',()=>toggleFavorite(d.id));
+    top.append(names,fave);
+    const tags=document.createElement('div');tags.className='directory-tags';
+    const year=document.createElement('span');year.className='directory-year';year.textContent=d.year?String(d.year):'Other year';tags.append(year);
+    const status=document.createElement('span');status.className='directory-status '+(d.specStatus||'example');
+    status.textContent=STATUS_LABELS[d.specStatus]||'Custom profile';tags.append(status);
     const data=document.createElement('div');data.className='device-data';
-    for(const s of [d.batteryMah+' mAh',d.wiredW+'W wired',d.wirelessW+'W wireless']){
-      const el=document.createElement('span');el.textContent=s;data.append(el);
-    }
+    for(const value of [
+      Number.isFinite(d.batteryMah)?d.batteryMah+' mAh':'Battery TBD',
+      Number.isFinite(d.wiredW)?d.wiredW+'W wired':'Wired TBD',
+      Number.isFinite(d.wirelessW)?(d.wirelessW?d.wirelessW+'W wireless':'No wireless'):'Wireless TBD'
+    ]){const tag=document.createElement('span');tag.textContent=value;data.append(tag);}
     const actions=document.createElement('div');actions.className='device-actions';
-    const use=document.createElement('button');use.type='button';use.className='load-device';use.textContent='Use this profile ↗';
-    use.addEventListener('click',()=>{populateBrands(d.brand);selectDevice(d.id);$('calculator').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
+    const use=document.createElement('button');use.type='button';use.className='load-device';
+    use.textContent=hasChargeSpecs(d)?'Estimate charging ↗':'Enter specs ↗';
+    use.addEventListener('click',()=>{
+      populateBrands(d.brand);selectDevice(d.id);
+      $('calculator').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+      if(!hasChargeSpecs(d))$('batteryMah').focus({preventScroll:true});
+    });
     actions.append(use);
+    if(d.sourceUrl && /^https:\/\//.test(d.sourceUrl)){
+      const source=document.createElement('a');
+      source.href=d.sourceUrl;source.target='_blank';source.rel='noopener noreferrer';
+      source.className='directory-source';source.textContent='Manufacturer page ↗';
+      source.setAttribute('aria-label','Manufacturer information for '+d.brand+' '+d.model);
+      actions.append(source);
+    }
     if(d.id.startsWith('custom-')){
       const remove=document.createElement('button');remove.type='button';remove.className='remove-device';remove.textContent='Delete';
       remove.setAttribute('aria-label','Delete '+d.model);
@@ -232,13 +304,15 @@ function renderCatalog() {
         if(!persistSaved()){savedDevices=previous;return;}
         if(selectedId===d.id){selectedId=null;populateBrands('Motorola');selectDevice(defaultId);}
         else populateBrands($('brandSelect').value);
-        populateComparison();renderCatalog();notify('Custom device removed');
+        updateBrandFilter();populateComparison();renderCatalog();notify('Custom device removed');
       });
       actions.append(remove);
     }
-    card.append(top,data,actions);grid.append(card);
+    card.append(top,tags,data,actions);
+    grid.append(card);
   }
 }
+
 function saveCurrentDevice(){
   try{
     const d=readCurrentDevice();
@@ -248,7 +322,7 @@ function saveCurrentDevice(){
     savedDevices=[...savedDevices.filter(x=>x.id!==d.id),d];
     if(!persistSaved()){savedDevices=previous;return;}
     selectedId=d.id;populateBrands(d.brand);$('deviceSelect').value=d.id;
-    populateComparison();renderCatalog();update();notify('Saved to this browser');
+    updateBrandFilter();populateComparison();renderCatalog();update();notify('Saved to this browser');
   }catch(e){showError(e.message);}
 }
 function getShareUrl(){
@@ -361,7 +435,14 @@ function init(){
     setPair('from',20);setPair('to',80);update();notify('Calculator reset');});
   populateComparison();
   for(const id of ['compareA','compareB','compareC'])$(id).addEventListener('change',renderComparison);
-  $('catalogSearch').addEventListener('input',renderCatalog);
+  updateBrandFilter();
+  $('catalogSearch').addEventListener('input',()=>renderCatalog());
+  for(const id of ['catalogYear','catalogBrand','catalogStatus','catalogSort'])$(id).addEventListener('change',()=>renderCatalog());
+  $('catalogFavoritesOnly').addEventListener('change',()=>renderCatalog());
+  $('catalogClearFilters').addEventListener('click',()=>{
+    $('catalogSearch').value='';$('catalogYear').value='all';$('catalogBrand').value='all';$('catalogStatus').value='all';$('catalogSort').value='newest';$('catalogFavoritesOnly').checked=false;renderCatalog();
+  });
+  $('catalogLoadMore').addEventListener('click',()=>{catalogVisible+=CATALOG_PAGE_SIZE;renderCatalog(false);});
   $('copyResult').addEventListener('click',()=>{if(!latest)return notify('Calculate first');copyText(latest.device.brand+' '+latest.device.model+': '+latest.options.start+'–'+latest.options.end+'% in approx. '+formatMinutes(latest.minMinutes)+' to '+formatMinutes(latest.maxMinutes)+' ('+latest.options.chargerW+'W charger). Estimate only.');});
   $('shareLink').addEventListener('click',()=>{try{copyText(getShareUrl());}catch(e){showError(e.message);}});
   $('exportCSV').addEventListener('click',exportCSV);
