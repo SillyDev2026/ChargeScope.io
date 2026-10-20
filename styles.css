@@ -515,3 +515,136 @@ html[data-theme=light]{
  .catalog-filters{gap:9px}
 }
 @media(prefers-reduced-motion:reduce){.directory-card{transform:none!important}}
+
+/* ===============================================================
+   ChargeScope v3.3 — fast discovery, compact mobile workspace
+   =============================================================== */
+:root{
+  --bg:#0b131e;--panel:#152131;--panel2:#1b293a;--stroke:#334257;
+  --text:#f5f9fc;--muted:#adbece;--accent:#82e1d2;--accent2:#b0beff;
+  --shadow:0 14px 38px rgba(0,0,0,.13);
+}
+html[data-theme=light]{
+  --bg:#f6f8fb;--panel:#fff;--panel2:#f0f5fa;--stroke:#dbe5ef;
+  --text:#1c2939;--muted:#64778a;--accent:#087e75;--accent2:#546db0;
+  --shadow:0 11px 30px rgba(20,50,80,.06)
+}
+.site-header{border-color:var(--stroke)}
+.brand .version{font-size:10px;background:var(--panel2)}
+.section-title h2{letter-spacing:-1.4px}
+.section-title>div{min-width:0}
+.form-panel,.result-panel{border-radius:18px}
+.form-panel .panel-heading{margin-bottom:17px}
+.phone-finder-launch{width:100%;min-height:67px;display:flex;align-items:center;gap:14px;
+ background:linear-gradient(112deg,color-mix(in srgb,var(--accent) 10%,var(--panel2)),var(--panel2));
+ border:1px solid color-mix(in srgb,var(--accent) 25%,var(--stroke));border-radius:13px;padding:11px 13px;
+ color:var(--text);text-align:left;margin-bottom:15px}
+.phone-finder-launch:hover,.phone-finder-launch:focus-visible{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,var(--panel2))}
+.finder-icon{width:39px;height:39px;flex-shrink:0;display:grid;place-items:center;
+ background:var(--panel);border:1px solid var(--stroke);border-radius:10px;
+ color:var(--accent);font-size:27px}
+.finder-label{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.finder-label strong{font-size:13px;letter-spacing:-.1px}
+.finder-label small{font-size:11px;color:var(--muted)}
+.finder-shortcut{font-size:13px;min-width:26px;height:27px;display:grid;place-items:center;
+ background:var(--panel);border:1px solid var(--stroke);border-radius:6px;color:var(--muted)}
+.recent-devices{border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke);padding:12px 0 13px;margin:14px 0}
+.recent-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.recent-heading strong{font-size:11px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted)}
+.recent-phone-list{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+.recent-phone-chip{border:1px solid var(--stroke);color:var(--text);background:var(--panel2);
+ border-radius:999px;min-height:36px;padding:6px 11px;font-size:11px;font-weight:740}
+.recent-phone-chip:hover,.recent-phone-chip:focus-visible{border-color:var(--accent);color:var(--accent)}
+.recent-empty{font-size:11px;line-height:1.5;margin:3px 0}
+.recent-heading .text-action{font-size:11px}
+.quick-picks{gap:7px 6px}
+.quick-picks button{border-radius:8px}
+.power-explainer{margin-top:17px;background:color-mix(in srgb,var(--accent) 8%,var(--panel2));border:1px solid var(--stroke);
+ border-radius:13px;display:flex;gap:13px;align-items:start;padding:16px}
+.power-explainer-icon{display:grid;place-items:center;flex-shrink:0;width:34px;height:34px;
+ border-radius:10px;background:var(--panel);color:var(--accent);font-size:18px}
+.power-explainer strong{font-size:13px;display:block;margin-bottom:6px}
+.power-explainer p{font-size:11px;color:var(--muted);line-height:1.7}
+.result-top{gap:16px}
+.result-hero-v3 .result-hero>span{line-height:1.55}
+.result-buttons button{min-height:43px}
+.catalog-overview{margin-top:3px}
+.catalog-filter-panel{box-shadow:var(--shadow)}
+.directory-card .device-actions{justify-content:flex-start}
+.directory-card .load-device,.directory-card .source-details-button{min-height:40px}
+.device-card .directory-source{display:inline-block;padding-block:7px}
+.phone-search-dialog{border:1px solid var(--stroke);border-radius:20px;padding:0;
+ color:var(--text);background:var(--panel);width:min(710px,calc(100% - 28px));
+ max-width:710px;max-height:88dvh;box-shadow:0 32px 105px rgba(0,0,0,.43);overflow:auto;overscroll-behavior:contain}
+.phone-search-dialog::backdrop{background:rgba(5,10,20,.76);backdrop-filter:blur(5px)}
+.phone-finder-shell{padding:24px}
+.finder-dialog-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}
+.finder-dialog-heading h2{font-size:clamp(24px,3vw,32px);letter-spacing:-1px;margin:8px 0}
+.finder-dialog-heading p{font-size:12px;line-height:1.5}
+.finder-dialog-heading>.icon-button{flex-shrink:0}
+.phone-search-box{display:flex;align-items:center;gap:10px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--stroke));
+ border-radius:12px;background:var(--control);padding:0 13px;color:var(--accent);font-size:25px}
+.phone-search-box:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.phone-search-box input{flex:1;min-height:53px;min-width:0;border:0;outline:0;
+ background:none;color:var(--text);font-size:15px}
+.phone-search-box input::placeholder{color:var(--muted);opacity:.75}
+.phone-search-box kbd{font:inherit;font-size:10px;border:1px solid var(--stroke);border-radius:6px;
+ padding:4px 6px;color:var(--muted);white-space:nowrap}
+.phone-search-count{color:var(--muted);font-size:11px;padding:13px 1px 9px}
+.phone-search-results{max-height:min(48dvh,465px);overflow-y:auto;overscroll-behavior:contain;
+ display:grid;gap:6px;padding-right:3px}
+.phone-search-result{position:relative;display:flex;align-items:flex-start;flex-direction:column;gap:5px;
+ min-height:62px;padding:11px 36px 11px 13px;border-radius:10px;border:1px solid var(--stroke);
+ color:var(--text);background:var(--panel2);text-align:left;width:100%;min-width:0}
+.phone-search-result:hover,.phone-search-result:focus-visible{background:color-mix(in srgb,var(--accent) 8%,var(--panel2));border-color:var(--accent)}
+.phone-search-name{font-size:13px;font-weight:800;line-height:1.35}
+.phone-search-result small{font-size:11px;color:var(--muted);line-height:1.4}
+.phone-search-chevron{position:absolute;right:12px;top:calc(50% - 11px);color:var(--accent);font-size:18px}
+.search-empty{font-size:12px;color:var(--muted);line-height:1.7;padding:25px 10px;text-align:center}
+.finder-footnote{font-size:11px;color:var(--muted);line-height:1.65;margin:16px 0 0}
+.finder-footnote strong{color:var(--text)}
+.mobile-dock{display:none}
+@media(max-width:800px){
+ .phone-finder-shell{padding:21px}
+ .phone-search-dialog{max-height:91dvh}
+}
+@media(max-width:600px){
+ .hero-v3{padding-bottom:27px}
+ .section-divider{margin-bottom:27px}
+ .section{padding-bottom:64px}
+ .form-panel,.result-panel{padding:18px}
+ .result-hero-v3{gap:10px}
+ .phone-search-box input{font-size:14px}
+ .phone-search-box kbd{display:none}
+ .mobile-dock{
+   position:fixed;z-index:34;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+   gap:4px;bottom:0;left:0;right:0;padding:6px 9px calc(7px + env(safe-area-inset-bottom));
+   background:color-mix(in srgb,var(--panel) 95%,transparent);border-top:1px solid var(--stroke);
+   box-shadow:0 -9px 30px rgba(0,0,0,.17);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+ }
+ .mobile-dock a{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;
+   min-width:0;min-height:51px;padding:5px 1px;border-radius:9px;text-decoration:none;
+   color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.1px}
+ .mobile-dock a span{color:var(--accent);font-size:18px;line-height:1.1}
+ .mobile-dock a:active,.mobile-dock a:focus-visible{background:var(--panel2);color:var(--text)}
+ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+ .toast{bottom:calc(85px + env(safe-area-inset-bottom))}
+ .phone-search-dialog{width:calc(100% - 14px);border-radius:15px;max-height:90dvh}
+ .phone-finder-shell{padding:15px}
+ .finder-dialog-heading h2{font-size:25px}
+ .phone-search-results{max-height:54dvh}
+ .phone-search-box input{min-height:47px}
+ .phone-search-result{min-height:61px}
+}
+@media(max-width:370px){
+ .form-panel,.result-panel{padding:14px}
+ .finder-label small{font-size:10px}
+ .phone-finder-launch{gap:10px;padding:9px}
+ .finder-icon{height:34px;width:34px}
+ .finder-shortcut{display:none}
+ .power-explainer{padding:12px;gap:9px}
+ .phone-search-result small{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .phone-search-dialog,.mobile-dock{scroll-behavior:auto}
+}
