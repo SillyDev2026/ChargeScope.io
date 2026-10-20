@@ -1,6 +1,6 @@
 // ChargeScope v2 — transparent, approximate charging model.
 // This is not a device benchmark or USB-PD negotiation simulator.
-export const VERSION = '3.2.0';
+export const VERSION = '3.3.0';
 const finite = (n) => {
   if (n === '' || n === null || typeof n === 'boolean' || (typeof n === 'string' && !n.trim())) return NaN;
   const parsed = Number(n);
