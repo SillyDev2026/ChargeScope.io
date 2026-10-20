@@ -1,15 +1,15 @@
 // ChargeScope v2 — transparent, approximate charging model.
 // This is not a device benchmark or USB-PD negotiation simulator.
-export const VERSION = '2.0.0';
-const finite = (n) => Number.isFinite(Number(n)) ? Number(n) : NaN;
+export const VERSION = '2.1.0';
+const finite = (n) => {\n  if (n === '' || n === null || typeof n === 'boolean' || (typeof n === 'string' && !n.trim())) return NaN;\n  const parsed = Number(n);\n  return Number.isFinite(parsed) ? parsed : NaN;\n};
 const between = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
 
 export function normalizeDevice(raw) {
   if (!raw || typeof raw !== 'object') throw new TypeError('Device is required');
   const device = {
     id: String(raw.id || 'custom').slice(0, 80),
-    brand: String(raw.brand || 'Custom').trim().slice(0, 60),
-    model: String(raw.model || 'Unnamed device').trim().slice(0, 100),
+    brand: String(raw.brand ?? 'Custom').trim().slice(0, 60),
+    model: String(raw.model ?? 'Unnamed device').trim().slice(0, 100),
     batteryMah: finite(raw.batteryMah),
     batteryV: finite(raw.batteryV ?? 3.85),
     wiredW: finite(raw.wiredW),
@@ -66,7 +66,7 @@ export function estimateCharge(rawDevice, rawOptions = {}) {
   while (p < opts.end - 1e-8) {
     const step = Math.min(0.5, opts.end - p);
     const midway = p + step / 2;
-    const watts = Math.max(0.5, batterySidePeakW * taperAt(midway));
+    const watts = Math.max(0.001, batterySidePeakW * taperAt(midway));
     const wh = capacityWh * step / 100;
     deliveredWh += wh;
     minutes += wh / watts * 60;
@@ -78,9 +78,9 @@ export function estimateCharge(rawDevice, rawOptions = {}) {
   // Broad model uncertainty: real charge curves vary substantially by device.
   const spread = opts.compatibility === 'unknown' ? 1.65 : 1.42;
   const minMinutes = Math.max(1, Math.floor(minutes * 0.80));
-  const maxMinutes = Math.ceil(minutes * spread);
+  const maxMinutes = Math.max(minMinutes + 1, Math.ceil(minutes * spread));
   const warnings = [];
-  if (opts.compatibility === 'unknown') warnings.push('Unknown charger protocol: advertised wattages may not negotiate.');
+  if (opts.compatibility === 'unknown') warnings.push('Unknown charger protocol: advertised wattages may not negotiate.');\n  if (adapterLimitW < Math.min(deviceLimit, opts.chargerW)) warnings.push('Cable power rating limits the estimated wired charging speed.');
   if (opts.temperature === 'hot') warnings.push('Hot-device estimate is uncertain. Unplug and cool the device if it becomes excessively hot.');
   if (opts.activity === 'gaming') warnings.push('Charging while gaming adds heat and may reduce or interrupt charging.');
   if (opts.method === 'wireless') warnings.push('Wireless placement, case thickness, and temperature can change charge speed.');
