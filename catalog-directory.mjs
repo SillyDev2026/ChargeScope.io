@@ -67,11 +67,21 @@ const urls={
   'Apple|iPhone Duo':'https://www.apple.com/newsroom/2026/09/apple-unveils-iphone-duo/'
 };
 
+// Battery capacity is manufacturer-reported where explicitly published; charge
+// wattage stays unfilled when a manufacturer only recommends an adapter rating.
+const officialPartial={
+  'Samsung|Galaxy S26':{batteryMah:4300},
+  'Samsung|Galaxy S26+':{batteryMah:4900},
+  'Samsung|Galaxy S26 Ultra':{batteryMah:5000},
+  'Samsung|Galaxy Z Fold8':{batteryMah:4800},
+  'Google|Pixel 11 Pro':{batteryMah:4850},
+  'Google|Pixel 11 Pro XL':{batteryMah:5115}
+};
 const releaseId=(brand,model)=>('directory-'+brand+'-'+model).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 export const DIRECTORY = ROWS.flatMap(([brand,year,names])=>
   names.split('|').map(model=>({
     id:releaseId(brand,model),brand,model,year,
-    batteryMah:null,batteryV:3.85,wiredW:null,wirelessW:null,
+    batteryMah:officialPartial[brand+'|'+model]?.batteryMah??null,batteryV:3.85,wiredW:null,wirelessW:null,
     specStatus:'needs-specs',
     source:'Device directory only — battery size and charge limits need confirmation for your region',
     sourceUrl:urls[brand+'|'+model]||''
