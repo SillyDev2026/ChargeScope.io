@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1022">
-  <meta name="description" content="ChargeScope v2 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
-  <meta property="og:title" content="ChargeScope v2 — Charging speed, explained">
+  <meta name="description" content="ChargeScope v2.1 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
+  <meta property="og:title" content="ChargeScope v2.1 — Charging speed, explained">
   <meta property="og:description" content="Compare phones, chargers and charging ranges with an editable, transparent estimator.">
-  <title>ChargeScope v2 — Universal Charging Calculator</title>
+  <title>ChargeScope v2.1 — Universal Charging Calculator</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
@@ -16,7 +16,7 @@
   <a class="skip-link" href="#calculator">Skip to calculator</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v2</span></span></a>
+      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v2.1</span></span></a>
       <nav class="nav" aria-label="Main navigation"><a href="#calculator">Calculator</a><a href="#compare">Compare</a><a href="#catalog">Devices</a><a href="#guide">Guide</a></nav>
       <button type="button" class="icon-button theme-button" id="themeToggle" aria-label="Switch color theme" title="Switch color theme">☼</button>
     </div>
@@ -25,7 +25,7 @@
   <main id="top">
     <section class="hero container">
       <div class="hero-copy">
-        <span class="eyebrow"><span class="live-dot" aria-hidden="true"></span> UNIVERSAL CHARGING ESTIMATOR <span class="eyebrow-divider">/</span> VERSION 2.0</span>
+        <span class="eyebrow"><span class="live-dot" aria-hidden="true"></span> UNIVERSAL CHARGING ESTIMATOR <span class="eyebrow-divider">/</span> VERSION 2.1</span>
         <h1>Charge smarter.<br><span class="gradient-text">Know the wait.</span></h1>
         <p class="hero-description">Estimate charging time for virtually any phone or tablet, compare charger wattages, and see what happens between 0% and 100%.</p>
         <div class="hero-chips"><span>⚡ Wired + wireless</span><span>◉ Multi-brand profiles</span><span>▦ Any screen size</span></div>
@@ -34,7 +34,7 @@
     </section>
 
     <section id="calculator" class="container section">
-      <div class="section-title"><div><span class="overline">01 / CALCULATOR</span><h2>Your charging lab</h2><p>Choose a device or enter your own specifications. All preset values can be edited.</p></div><span class="model-tag">ESTIMATION ENGINE 2.0</span></div>
+      <div class="section-title"><div><span class="overline">01 / CALCULATOR</span><h2>Your charging lab</h2><p>Choose a device or enter your own specifications. All preset values can be edited.</p></div><span class="model-tag">ESTIMATION ENGINE 2.1</span></div>
       <div class="calc-grid">
         <form class="panel form-panel" id="calcForm" novalidate>
           <div class="panel-heading"><div class="panel-icon">▣</div><div><h3>Device profile</h3><p>Select your phone or create a custom profile.</p></div></div>
@@ -53,7 +53,7 @@
             <label class="field"><span>Max wired (W)</span><input type="number" id="wiredW" inputmode="decimal" min="1" max="300" step=".1" required></label>
             <label class="field"><span>Max wireless (W)</span><input type="number" id="wirelessW" inputmode="decimal" min="0" max="100" step=".1" required></label>
           </div>
-          <p class="micro-note">Profiles are editable starting points, <strong>not verified benchmark data</strong>. Market variants and proprietary protocols may differ.</p>
+          <p class="micro-note">Profiles are editable starting points, <strong>not verified benchmark data</strong>. Changes are temporary until you choose <strong>Save profile</strong>. Regional variants and charger protocols may differ.</p>
           <div class="line"></div>
           <div class="panel-heading small-heading"><div class="panel-icon violet">ϟ</div><div><h3>Power source</h3><p>Advertised power is a ceiling, not a guaranteed charge rate.</p></div></div>
           <div class="form-row">
@@ -66,6 +66,7 @@
           </div>
           <div class="line"></div>
           <div class="panel-heading small-heading"><div class="panel-icon blue">◔</div><div><h3>Battery range</h3><p>Choose any start and target charge level.</p></div></div>
+          <div class="range-presets" role="group" aria-label="Quick battery range presets"><button type="button" data-charge-range="0:100">0–100%</button><button type="button" data-charge-range="20:80">20–80%</button><button type="button" data-charge-range="30:100">30–100%</button><button type="button" data-charge-range="50:80">50–80%</button></div>
           <div class="range-block"><div class="range-heading"><label for="fromSlider">Starting charge</label><div class="percent-input"><input id="fromNumber" type="number" min="0" max="99" value="20" aria-label="Start percentage"><span>%</span></div></div><input id="fromSlider" type="range" min="0" max="99" value="20" aria-label="Starting battery percentage"></div>
           <div class="range-block"><div class="range-heading"><label for="toSlider">Target charge</label><div class="percent-input"><input id="toNumber" type="number" min="1" max="100" value="80" aria-label="Target percentage"><span>%</span></div></div><input id="toSlider" type="range" min="1" max="100" value="80" aria-label="Target battery percentage"></div>
           <div class="line"></div>
@@ -98,12 +99,12 @@
     </section>
 
     <section id="compare" class="container section">
-      <div class="section-title"><div><span class="overline">02 / COMPARISON</span><h2>Compare charging speeds</h2><p>Same charger, same percentage range, different phone capabilities.</p></div></div>
+      <div class="section-title"><div><span class="overline">02 / COMPARISON</span><h2>Compare charging speeds</h2><p>Compare your current edited phone against two other models under the same charging conditions.</p></div></div>
       <div class="panel compare-panel"><div class="compare-picker"><label class="field"><span>Device 1</span><select id="compareA"></select></label><label class="field"><span>Device 2</span><select id="compareB"></select></label><label class="field"><span>Device 3</span><select id="compareC"></select></label></div><div id="compareResults" class="compare-results" aria-live="polite"></div><p class="micro-note">Uses the calculator's selected charger and charging conditions. A phone's quoted W rating does not confirm protocol compatibility.</p></div>
     </section>
 
     <section id="catalog" class="container section">
-      <div class="section-title"><div><span class="overline">03 / DEVICE DATABASE</span><h2>Browse the catalog</h2><p>Search example models from major brands, or save your own profile for any manufacturer.</p></div></div>
+      <div class="section-title"><div><span class="overline">03 / DEVICE DATABASE</span><h2>Browse the catalog</h2><p>Search example models from major brands, or save your own profile for any manufacturer. Example specifications may vary by region.</p></div></div>
       <div class="catalog-tools"><label class="search-box"><span aria-hidden="true">⌕</span><input id="catalogSearch" type="search" placeholder="Search model or brand" aria-label="Search device catalog"></label><span id="catalogCount" class="catalog-count"></span></div>
       <div id="catalogGrid" class="catalog-grid"></div>
     </section>
@@ -118,7 +119,7 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v2.0 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v2.1 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script type="module" src="./app.js"></script>
 </body>
