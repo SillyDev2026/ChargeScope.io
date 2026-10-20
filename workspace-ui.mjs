@@ -118,6 +118,17 @@ export function setupPhoneFinder({devices,select,favorites,notify}){
   });
   $('phoneSearchInput').addEventListener('input',renderSearch);
   $('phoneSearchInput').addEventListener('keydown',event=>{
+    if(event.key==='Escape'){
+      // A native search field often consumes Escape to clear its own text.
+      // Close the dialog explicitly before that browser default takes effect.
+      event.preventDefault();event.stopPropagation();
+      const dialog=$('phoneSearchDialog');
+      if(dialog.open){
+        if(typeof dialog.close==='function')dialog.close();
+        else dialog.removeAttribute('open');
+      }
+      return;
+    }
     if(event.key==='Enter'){
       const first=$('phoneSearchResults').querySelector('.phone-search-result');
       if(first){event.preventDefault();first.click();}
