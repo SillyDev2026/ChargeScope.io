@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 test('static site has all required assets',()=>{
-  for(const file of ['index.html','styles.css','app.js','core.mjs','devices.mjs','catalog-directory.mjs','catalog-utils.mjs','icon.svg','manifest.webmanifest','service-worker.js'])
+  for(const file of ['index.html','styles.css','app.js','core.mjs','devices.mjs','catalog-directory.mjs','catalog-utils.mjs','official-specs.mjs','spec-view.mjs','icon.svg','manifest.webmanifest','service-worker.js'])
     assert.ok(fs.statSync(new URL('../'+file,import.meta.url)).size>0,file);
 });
 test('calculator and comparison controls exist',()=>{
   const html=fs.readFileSync(new URL('../index.html',import.meta.url),'utf8');
-  for(const id of ['calcForm','brandSelect','deviceSelect','batteryMah','wiredW','wirelessW','chargeMethod','chargerW','fromNumber','toNumber','temperature','activity','curve','compareResults','catalogGrid','shareLink','exportCSV']){
+  for(const id of ['specDialog','deviceEvidence','catalogExportCSV','catalogSourced','calcForm','brandSelect','deviceSelect','batteryMah','wiredW','wirelessW','chargeMethod','chargerW','fromNumber','toNumber','temperature','activity','curve','compareResults','catalogGrid','shareLink','exportCSV']){
     assert.match(html,new RegExp('id="'+id+'"'));
   }
   assert.match(html,/name="viewport"/);
@@ -24,7 +24,7 @@ test('device presets are labelled examples',async()=>{
   const {DEVICES}=await import('../devices.mjs');
   assert.ok(DEVICES.length>=30);
   for(const d of DEVICES){
-    assert.ok(['example','manufacturer','needs-specs'].includes(d.specStatus));
+    assert.ok(['example','manufacturer','partial','needs-specs'].includes(d.specStatus));
     assert.ok(typeof d.source==='string'&&d.source.length>0);
     if(d.specStatus==='needs-specs')assert.equal(d.wiredW,null);
   }
