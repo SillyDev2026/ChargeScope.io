@@ -18,7 +18,7 @@ test('larger charge interval takes longer',()=>{
   assert.ok(go({start:80,end:100}).minutes>go({start:20,end:40}).minutes/2);
 });
 test('oversized charger cannot exceed phone limit',()=>{
-  const low=go({chargerW:68});
+  const low=go({chargerW:68,cableW:100});
   const high=go({chargerW:240,cableW:240});
   assert.equal(low.minutes,high.minutes);
   assert.equal(high.adapterLimitW,68);
