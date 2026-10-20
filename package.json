@@ -1,0 +1,14 @@
+{
+  "name": "chargescope-io",
+  "version": "2.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Responsive multi-brand charging estimator",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:ui": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}
