@@ -366,3 +366,13 @@ html{scroll-padding-top:98px}body{background:var(--bg);font-size:14px;letter-spa
  .site-header{overflow-x:clip}
  .site-header .nav{overscroll-behavior-x:contain}
 }
+
+/* v3 accessible mobile navigation: all destinations visible, no sideways menu. */
+@media(max-width:520px){
+ .site-header .nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%;max-width:100%;overflow:visible;padding:4px 0}
+ .site-header .nav a{display:flex;justify-content:center;align-items:center;text-align:center;min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;padding:6px 3px;border-radius:7px;min-height:30px;font-size:11px}
+ .site-header .nav a:focus-visible{background:var(--panel2)}
+}
+/* Safari can include subpixel/ink overflow in the root scrollable area;
+   clip the outer document, while preserving intentional inner scrollers. */
+html,body{overflow-x:clip}
