@@ -9,7 +9,12 @@ test('every viewport has usable navigation without horizontal page overflow',asy
   await expect(page.getByRole('link',{name:'Compare'})).toBeVisible();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   const offenders=overflow>2?await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,className:typeof el.className==='string'?el.className:'',right:Math.round(el.getBoundingClientRect().right)})).filter(x=>x.right>window.innerWidth+2).slice(0,12)):[];
-  expect(overflow,JSON.stringify(offenders)).toBeLessThanOrEqual(2);
+  const diagnostics=await page.evaluate(()=>{
+    const d=document.documentElement,b=document.body,header=document.querySelector('.site-header'),nav=document.querySelector('.nav');
+    const measure=e=>e?{scroll:e.scrollWidth,client:e.clientWidth,rect:e.getBoundingClientRect().toJSON(),overflowX:getComputedStyle(e).overflowX}:null;
+    return {innerWidth:window.innerWidth,visualWidth:window.visualViewport?.width,html:measure(d),body:measure(b),header:measure(header),nav:measure(nav)};
+  });
+  expect(overflow,JSON.stringify({offenders,diagnostics})).toBeLessThanOrEqual(2);
 });
 
 test('preset ranges update the numeric inputs and estimate',async({page})=>{
