@@ -2,7 +2,8 @@ import {estimateCharge, normalizeDevice, formatMinutes, VERSION} from './core.mj
 import {DEVICES} from './devices.mjs';
 import {setupPlanner, renderPlanner} from './planner.mjs';
 import {setupLab, renderLab} from './lab-ui.mjs';
-import {CATALOG_PAGE_SIZE,queryCatalog,catalogStatistics,STATUS_LABELS,hasChargeSpecs} from './catalog-utils.mjs';
+import {CATALOG_PAGE_SIZE,queryCatalog,catalogStatistics,STATUS_LABELS,hasChargeSpecs,supportedModes,specCompleteness} from './catalog-utils.mjs';
+import {setupSpecView,openSpecDetails,renderSpecEvidence,isProfileEdited} from './spec-view.mjs';
 
 const $ = id => document.getElementById(id);
 const LIST_KEY = 'chargescope-v2-devices';
@@ -70,8 +71,12 @@ function setDeviceFields(d) {
     notice.textContent='Editable example: verify the battery and charging specifications for your exact phone and charger.';
   }else if(d.specStatus==='manufacturer'){
     notice.hidden=false;
-    notice.textContent='Manufacturer-backed charging specifications for the indicated region. Other regional versions or charging protocols may differ.';
+    notice.textContent='Official values for the stated region. These are rated maximum limits—not constant charging power. Charger protocol and temperature still matter.';
+  }else if(d.specStatus==='partial'){
+    notice.hidden=false;
+    notice.textContent='Official partial specifications: unknown fields are intentionally blank. A recommended adapter size does not establish the phone’s maximum input wattage.';
   }else notice.hidden=true;
+  renderSpecEvidence(d,false);
 }
 function populateBrands(preferred) {
   const current=preferred||$('brandSelect').value||'Motorola';
@@ -95,6 +100,9 @@ function selectDevice(id) {
   $('brandSelect').value=d.brand;
   populateModels(id);
   setDeviceFields(d);
+  const modes=supportedModes(d);
+  if(!modes.wired&&modes.wireless)$('chargeMethod').value='wireless';
+  else if(modes.wired&&!modes.wireless)$('chargeMethod').value='wired';
   update();
 }
 function newDevice(){
@@ -108,7 +116,8 @@ function readCurrentDevice(){
   return normalizeDevice({
     id:selectedId||'custom-draft',brand:$('editBrand').value,model:$('editModel').value,
     batteryMah:$('batteryMah').value,batteryV:$('batteryV').value,
-    wiredW:$('wiredW').value,wirelessW:$('wirelessW').value
+    wiredW:$('wiredW').value.trim()===''?null:$('wiredW').value,
+    wirelessW:$('wirelessW').value.trim()===''?null:$('wirelessW').value
   });
 }
 function readOptions() {
@@ -138,6 +147,12 @@ function setPair(which,value) {
 }
 function update() {
   $('cableField').hidden=$('chargeMethod').value==='wireless';
+  const baseline=selectedId?getDevice(selectedId):null;
+  if(baseline){
+    renderSpecEvidence(baseline,isProfileEdited(baseline,{
+      batteryMah:$('batteryMah').value,wiredW:$('wiredW').value,wirelessW:$('wirelessW').value
+    }));
+  }
   try {
     const result=estimateCharge(readCurrentDevice(),readOptions());
     latest=result;showError('');
@@ -223,7 +238,7 @@ function renderComparison(){
   rows.forEach(({d,r,error})=>{
     const row=document.createElement('div');row.className='compare-row';
     const title=document.createElement('div');title.className='compare-label';title.textContent=d.model;
-    const sub=document.createElement('span');sub.textContent=d.brand+' · '+d.batteryMah+'mAh';title.append(sub);
+    const sub=document.createElement('span');sub.textContent=d.brand+' · '+(Number.isFinite(d.batteryMah)?d.batteryMah+'mAh':'battery unknown');title.append(sub);
     const track=document.createElement('div');track.className='compare-bar-track';const bar=document.createElement('div');
     bar.className='compare-bar';bar.style.width=r?Math.max(1,100*r.minutes/max)+'%':'0%';track.append(bar);
     const label=document.createElement('strong');label.textContent=r?formatMinutes(r.minMinutes)+'–'+formatMinutes(r.maxMinutes):(error||'N/A');
@@ -238,6 +253,7 @@ function renderCatalog(reset=true) {
   $('catalogTotal').textContent=stats.total.toLocaleString();
   $('catalogBrands').textContent=stats.brands.toLocaleString();
   $('catalogReady').textContent=stats.ready.toLocaleString();
+  $('catalogSourced').textContent=stats.sourced.toLocaleString();
   const matches=queryCatalog(all,{
     query:$('catalogSearch').value,year:$('catalogYear').value,
     brand:$('catalogBrand').value,status:$('catalogStatus').value,
@@ -258,6 +274,7 @@ function renderCatalog(reset=true) {
   for(const d of displayed){
     const card=document.createElement('article');card.className='device-card directory-card';
     if(d.specStatus==='needs-specs')card.classList.add('needs-specs');
+    card.dataset.status=d.specStatus||'custom';
     const top=document.createElement('div');top.className='device-card-top';
     const names=document.createElement('div');
     const brand=document.createElement('span');brand.className='device-brand';brand.textContent=d.brand;
@@ -273,6 +290,12 @@ function renderCatalog(reset=true) {
     const year=document.createElement('span');year.className='directory-year';year.textContent=d.year?String(d.year):'Other year';tags.append(year);
     const status=document.createElement('span');status.className='directory-status '+(d.specStatus||'example');
     status.textContent=STATUS_LABELS[d.specStatus]||'Custom profile';tags.append(status);
+    const evidence=document.createElement('div');evidence.className='card-evidence';
+    const progress=document.createElement('div');progress.className='card-evidence-bar';
+    const fill=document.createElement('div');fill.style.width=specCompleteness(d).percent+'%';progress.append(fill);
+    const progressLabel=document.createElement('span');
+    progressLabel.textContent=specCompleteness(d).known+'/3 published fields · '+(d.region||'Region varies');
+    evidence.append(progress,progressLabel);
     const data=document.createElement('div');data.className='device-data';
     for(const value of [
       Number.isFinite(d.batteryMah)?d.batteryMah+' mAh':'Battery TBD',
@@ -281,13 +304,19 @@ function renderCatalog(reset=true) {
     ]){const tag=document.createElement('span');tag.textContent=value;data.append(tag);}
     const actions=document.createElement('div');actions.className='device-actions';
     const use=document.createElement('button');use.type='button';use.className='load-device';
-    use.textContent=hasChargeSpecs(d)?'Estimate charging ↗':'Enter specs ↗';
+    const modes=supportedModes(d);
+    use.textContent=modes.wired?'Estimate charging ↗':modes.wireless?'Wireless estimate ↗':'Enter specs ↗';
     use.addEventListener('click',()=>{
       populateBrands(d.brand);selectDevice(d.id);
       $('calculator').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
-      if(!hasChargeSpecs(d))$('batteryMah').focus({preventScroll:true});
+      if(!modes.wired&&!modes.wireless)$('batteryMah').focus({preventScroll:true});
     });
     actions.append(use);
+    const details=document.createElement('button');details.type='button';details.className='source-details-button';
+    details.textContent='View details';
+    details.setAttribute('aria-label','View verified fields for '+d.brand+' '+d.model);
+    details.addEventListener('click',()=>openSpecDetails(d));
+    actions.append(details);
     if(d.sourceUrl && /^https:\/\//.test(d.sourceUrl)){
       const source=document.createElement('a');
       source.href=d.sourceUrl;source.target='_blank';source.rel='noopener noreferrer';
@@ -308,7 +337,7 @@ function renderCatalog(reset=true) {
       });
       actions.append(remove);
     }
-    card.append(top,tags,data,actions);
+    card.append(top,tags,evidence,data,actions);
     grid.append(card);
   }
 }
@@ -398,6 +427,10 @@ function init(){
     $('chargerW').focus({preventScroll:true});
   }});
   $('themeToggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+  setupSpecView({getSelected:()=>selectedId?getDevice(selectedId):null,onUse:(d)=>{
+    populateBrands(d.brand);selectDevice(d.id);
+    $('calculator').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  }});
   populateBrands('Motorola');selectDevice(defaultId);
   $('brandSelect').addEventListener('change',()=>{
     const brand=$('brandSelect').value;
