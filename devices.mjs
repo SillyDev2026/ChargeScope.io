@@ -1,6 +1,7 @@
 // Built-in examples for getting started, not independently measured charge tests.
 // Every field is editable in the UI; verify device and charger specifications.
-import {DIRECTORY,VERIFIED_2026} from './catalog-directory.mjs';
+import {DIRECTORY} from './catalog-directory.mjs';
+import {OFFICIAL_BY_KEY,OFFICIAL_SPECS} from './official-specs.mjs';
 
 const EXAMPLES = [
   {id:'moto-razr-ultra-2026',brand:'Motorola',model:'Razr Ultra 2026',batteryMah:5000,wiredW:68,wirelessW:30},
@@ -38,23 +39,62 @@ const EXAMPLES = [
   {id:'infinix-note-50-pro',brand:'Infinix',model:'Note 50 Pro',batteryMah:5200,wiredW:90,wirelessW:30}
 ].map(d=>({...d,batteryV:3.85,source:'Editable example; specifications and regional versions may vary'}));
 
-// Keep existing example IDs stable so saved links and quick picks still work.
-// Directory-only models deliberately require users to enter charging specs.
+
+// Preserve old public IDs, bookmarks, saved links and custom profile behavior.
+// The legacy EXAMPLES had unsourced wattages. Never display those as official facts.
+// We intentionally null out unverified values rather than perpetuate guesses.
+// The manufacturer-backed overlay replaces the placeholder with sourced values.
 const key=d=>(d.brand+'|'+d.model).toLocaleLowerCase();
 const known=new Map(DIRECTORY.map(d=>[key(d),d]));
-const verified=new Map(VERIFIED_2026.map(d=>[key(d),d]));
-const existing=EXAMPLES.map(d=>{
-  const listing=known.get(key(d));
-  const official=verified.get(key(d));
-  return {
-    ...d,year:listing?.year??null,
-    specStatus:official?'manufacturer':'example',
-    source:official?.source||d.source,
-    sourceUrl:official?.sourceUrl||listing?.sourceUrl||''
+const legacy=EXAMPLES.map(d=>({
+  ...d,
+  year:known.get(key(d))?.year??null,
+  batteryMah:null,wiredW:null,wirelessW:null,
+  specStatus:'needs-specs',
+  source:'Legacy example removed pending a reliable product specification',
+  sourceUrl:'',
+  protocol:'Not confirmed',
+  verifiedAt:null,region:'Varies',chargerRecommendationW:null,advertisedChargeClaim:''
+}));
+const taken=new Set(legacy.map(key));
+const directory=DIRECTORY.filter(d=>!taken.has(key(d)));
+const base=[...legacy,...directory];
+
+function mergeOfficial(d) {
+  const info=OFFICIAL_BY_KEY.get(key(d));
+  const fallback={
+    region:'Varies',verifiedAt:null,chargerRecommendationW:null,
+    advertisedChargeClaim:'',protocol:'Not confirmed',notes:''
   };
-});
-const taken=new Set(existing.map(key));
-const directory= DIRECTORY.filter(d=>!taken.has(key(d)));
-export const DEVICES=[...existing,...directory].sort((a,b)=>
+  if(!info){
+    if(Number.isFinite(d.batteryMah)&&d.sourceUrl)
+      return {...fallback,...d,specStatus:'partial',
+        source:'Manufacturer page lists battery capacity. Other charging specifications still need verification.',
+        verifiedAt:'2026-10-20'};
+    return {...fallback,...d};
+  }
+  const complete=Number.isFinite(info.batteryMah)&&Number.isFinite(info.wiredW)&&info.wiredW>0
+    && Number.isFinite(info.wirelessW)&&info.wirelessW>=0;
+  return {
+    ...d,
+    batteryMah:info.batteryMah,wiredW:info.wiredW,wirelessW:info.wirelessW,
+    batteryV:3.85,
+    batteryWh:info.batteryWh??null,
+    region:info.region,protocol:info.protocol,
+    sourceUrl:info.sourceUrl,verifiedAt:info.asOf,
+    chargerRecommendationW:info.chargerRecommendationW,
+    advertisedChargeClaim:info.advertisedChargeClaim,
+    notes:info.notes,
+    specStatus:complete?'manufacturer':'partial',
+    source:complete?'Manufacturer-confirmed charging specifications':'Manufacturer-confirmed fields; missing fields are not inferred'
+  };
+}
+const present=new Set(base.map(key));
+const extras=OFFICIAL_SPECS.filter(d=>!present.has(key(d))).map(d=>({
+  id:('official-'+d.brand+'-'+d.model.replaceAll('+','-plus')).toLocaleLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),
+  brand:d.brand,model:d.model,year:null,batteryMah:null,batteryV:3.85,wiredW:null,wirelessW:null,
+  specStatus:'needs-specs',source:'',sourceUrl:''
+}));
+export const DEVICES=[...base,...extras].map(mergeOfficial).sort((a,b)=>
   (b.year??0)-(a.year??0)||a.brand.localeCompare(b.brand)||a.model.localeCompare(b.model)
 );
