@@ -47,6 +47,7 @@ function renderRecents(){
   area.replaceChildren();
   recentIds=normalizeRecents(recentIds,knownIds());
   if(actions)actions.hidden=recentIds.length===0;
+  $('recentClear').hidden=recentIds.length===0;
   if(!recentIds.length){
     const empty=document.createElement('p');empty.className='recent-empty';
     empty.textContent='Your recently viewed models will appear here.';area.append(empty);return;
