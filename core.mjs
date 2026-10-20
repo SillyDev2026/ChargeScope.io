@@ -1,6 +1,6 @@
 // ChargeScope v2 — transparent, approximate charging model.
 // This is not a device benchmark or USB-PD negotiation simulator.
-export const VERSION = '3.1.0';
+export const VERSION = '3.2.0';
 const finite = (n) => {
   if (n === '' || n === null || typeof n === 'boolean' || (typeof n === 'string' && !n.trim())) return NaN;
   const parsed = Number(n);
@@ -16,14 +16,14 @@ export function normalizeDevice(raw) {
     model: String(raw.model ?? 'Unnamed device').trim().slice(0, 100),
     batteryMah: finite(raw.batteryMah),
     batteryV: finite(raw.batteryV ?? 3.85),
-    wiredW: finite(raw.wiredW),
-    wirelessW: finite(raw.wirelessW ?? 0)
+    wiredW: raw.wiredW === null || raw.wiredW === '' ? null : finite(raw.wiredW),
+    wirelessW: raw.wirelessW === null || raw.wirelessW === '' ? null : finite(raw.wirelessW ?? 0)
   };
   if (!device.brand || !device.model) throw new RangeError('Enter a brand and model');
   if (!(device.batteryMah >= 800 && device.batteryMah <= 30000)) throw new RangeError('Battery must be 800–30,000 mAh');
   if (!(device.batteryV >= 3 && device.batteryV <= 4.5)) throw new RangeError('Battery voltage must be 3–4.5 V');
-  if (!(device.wiredW >= 1 && device.wiredW <= 300)) throw new RangeError('Wired limit must be 1–300 W');
-  if (!(device.wirelessW >= 0 && device.wirelessW <= 100)) throw new RangeError('Wireless limit must be 0–100 W');
+  if (device.wiredW !== null && !(device.wiredW >= 1 && device.wiredW <= 300)) throw new RangeError('Wired limit must be 1–300 W');
+  if (device.wirelessW !== null && !(device.wirelessW >= 0 && device.wirelessW <= 100)) throw new RangeError('Wireless limit must be 0–100 W');
   return device;
 }
 
@@ -57,7 +57,8 @@ export function estimateCharge(rawDevice, rawOptions = {}) {
   if (!(opts.temperature in tempFactors) || !(opts.activity in activityFactors)) throw new RangeError('Invalid charging conditions');
   if (!['matched','unknown'].includes(opts.compatibility)) throw new RangeError('Invalid compatibility choice');
   const deviceLimit = opts.method === 'wired' ? device.wiredW : device.wirelessW;
-  if (deviceLimit <= 0) throw new RangeError('This device has no wireless charging wattage entered');
+  if (deviceLimit === null) throw new RangeError('Maximum '+opts.method+' charging wattage not confirmed. Enter a supported power limit or choose the other charging method.');
+  if (deviceLimit <= 0) throw new RangeError('This device does not support wireless charging or its rated wattage is zero');
   const adapterLimitW = Math.min(deviceLimit, opts.chargerW, opts.method === 'wired' ? opts.cableW : Infinity);
   const protocolFactor = opts.compatibility === 'matched' ? 1 : 0.66;
   const conditionFactor = tempFactors[opts.temperature] * activityFactors[opts.activity] * protocolFactor;
@@ -85,7 +86,7 @@ export function estimateCharge(rawDevice, rawOptions = {}) {
   const maxMinutes = Math.max(minMinutes + 1, Math.ceil(minutes * spread));
   const warnings = [];
   if (opts.compatibility === 'unknown') warnings.push('Unknown charger protocol: advertised wattages may not negotiate.');
-  if (adapterLimitW < Math.min(deviceLimit, opts.chargerW)) warnings.push('Cable power rating limits the estimated wired charging speed.');
+  if (opts.method === 'wired' && adapterLimitW < Math.min(deviceLimit, opts.chargerW)) warnings.push('Cable power rating limits the estimated wired charging speed.');
   if (opts.temperature === 'hot') warnings.push('Hot-device estimate is uncertain. Unplug and cool the device if it becomes excessively hot.');
   if (opts.activity === 'gaming') warnings.push('Charging while gaming adds heat and may reduce or interrupt charging.');
   if (opts.method === 'wireless') warnings.push('Wireless placement, case thickness, and temperature can change charge speed.');
