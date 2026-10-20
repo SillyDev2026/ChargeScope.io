@@ -1,6 +1,8 @@
 // Built-in examples for getting started, not independently measured charge tests.
 // Every field is editable in the UI; verify device and charger specifications.
-export const DEVICES = [
+import {DIRECTORY,VERIFIED_2026} from './catalog-directory.mjs';
+
+const EXAMPLES = [
   {id:'moto-razr-ultra-2026',brand:'Motorola',model:'Razr Ultra 2026',batteryMah:5000,wiredW:68,wirelessW:30},
   {id:'moto-razr-2026',brand:'Motorola',model:'Razr 2026',batteryMah:4800,wiredW:30,wirelessW:15},
   {id:'moto-razr-ultra-2025',brand:'Motorola',model:'Razr Ultra 2025',batteryMah:4700,wiredW:68,wirelessW:30},
@@ -35,3 +37,24 @@ export const DEVICES = [
   {id:'tecno-camon-40-pro',brand:'TECNO',model:'Camon 40 Pro',batteryMah:5200,wiredW:45,wirelessW:0},
   {id:'infinix-note-50-pro',brand:'Infinix',model:'Note 50 Pro',batteryMah:5200,wiredW:90,wirelessW:30}
 ].map(d=>({...d,batteryV:3.85,source:'Editable example; specifications and regional versions may vary'}));
+
+// Keep existing example IDs stable so saved links and quick picks still work.
+// Directory-only models deliberately require users to enter charging specs.
+const key=d=>(d.brand+'|'+d.model).toLocaleLowerCase();
+const known=new Map(DIRECTORY.map(d=>[key(d),d]));
+const verified=new Map(VERIFIED_2026.map(d=>[key(d),d]));
+const existing=EXAMPLES.map(d=>{
+  const listing=known.get(key(d));
+  const official=verified.get(key(d));
+  return {
+    ...d,year:listing?.year??null,
+    specStatus:official?'manufacturer':'example',
+    source:official?.source||d.source,
+    sourceUrl:official?.sourceUrl||listing?.sourceUrl||''
+  };
+});
+const taken=new Set(existing.map(key));
+const directory= DIRECTORY.filter(d=>!taken.has(key(d)));
+export const DEVICES=[...existing,...directory].sort((a,b)=>
+  (b.year??0)-(a.year??0)||a.brand.localeCompare(b.brand)||a.model.localeCompare(b.model)
+);
