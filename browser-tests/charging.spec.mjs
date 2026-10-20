@@ -237,3 +237,68 @@ test('source confidence filter and curated CSV export work',async({page})=>{
   const download=await downloadEvent;
   expect(download.suggestedFilename()).toBe('chargescope-phone-specifications.csv');
 });
+
+test('universal phone finder switches model without scrolling long select menus',async({page})=>{
+  await page.locator('#openPhoneSearch').click();
+  await expect(page.locator('#phoneSearchDialog')).toBeVisible();
+  await page.locator('#phoneSearchInput').fill('galaxy s26 ultra');
+  await expect(page.locator('.phone-search-result')).toHaveCount(1);
+  await page.locator('.phone-search-result').click();
+  await expect(page.locator('#phoneSearchDialog')).toBeHidden();
+  await expect(page.locator('#editBrand')).toHaveValue('Samsung');
+  await expect(page.locator('#editModel')).toHaveValue('Galaxy S26 Ultra');
+  await expect(page.locator('#wiredW')).toHaveValue('60');
+  await expect(page.locator('.recent-phone-chip').first()).toContainText('Galaxy S26 Ultra');
+});
+
+test('recent phone and charging setup survive page reload',async({page})=>{
+  await page.locator('#openPhoneSearch').click();
+  await page.locator('#phoneSearchInput').fill('oneplus 13');
+  await page.locator('.phone-search-result').first().click();
+  await page.locator('#chargerW').fill('45');
+  await page.locator('[data-charge-range="30:100"]').click();
+  await expect(page.locator('#gainStat')).toHaveText('70%');
+  await page.reload();
+  await expect(page.locator('#editModel')).toHaveValue('OnePlus 13');
+  await expect(page.locator('#chargerW')).toHaveValue('45');
+  await expect(page.locator('#fromNumber')).toHaveValue('30');
+  await expect(page.locator('#toNumber')).toHaveValue('100');
+  await expect(page.locator('.recent-phone-chip').first()).toContainText('OnePlus 13');
+  await page.locator('#recentClear').click();
+  await expect(page.locator('#recentPhones')).toContainText('recently viewed models');
+});
+
+test('keyboard quick find opens with slash and handles no match',async({page})=>{
+  await page.locator('body').click({position:{x:5,y:5}});
+  await page.keyboard.press('/');
+  await expect(page.locator('#phoneSearchDialog')).toBeVisible();
+  await expect(page.locator('#phoneSearchInput')).toBeFocused();
+  await page.locator('#phoneSearchInput').fill('absolutely-no-such-phone');
+  await expect(page.locator('.phone-search-result')).toHaveCount(0);
+  await expect(page.locator('.search-empty')).toContainText('No matching phone');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#phoneSearchDialog')).toBeHidden();
+});
+
+test('charging power explanation adjusts to adapter, cable and phone limits',async({page})=>{
+  await expect(page.locator('#powerLimitLabel')).toContainText('charger');
+  await page.locator('#chargerW').fill('100');
+  await expect(page.locator('#powerLimitLabel')).toContainText('cable');
+  await page.locator('#cableW').selectOption('100');
+  await expect(page.locator('#powerLimitLabel')).toContainText('phone');
+  await page.locator('#chargerW').fill('');
+  await expect(page.locator('#powerLimitExplanation')).toContainText('Select a valid phone');
+});
+
+test('phone search works without mobile horizontal overflow, and mobile dock is responsive',async({page})=>{
+  const width=page.viewportSize()?.width??1200;
+  const dock=page.locator('.mobile-dock');
+  if(width<=600){
+    await expect(dock).toBeVisible();
+    await expect(dock.locator('a')).toHaveCount(4);
+  }else await expect(dock).toBeHidden();
+  await page.locator('#openPhoneSearch').click();
+  await expect(page.locator('#phoneSearchDialog')).toBeVisible();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(2);
+});
