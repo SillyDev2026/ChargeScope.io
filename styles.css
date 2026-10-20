@@ -376,3 +376,53 @@ html{scroll-padding-top:98px}body{background:var(--bg);font-size:14px;letter-spa
 /* Safari can include subpixel/ink overflow in the root scrollable area;
    clip the outer document, while preserving intentional inner scrollers. */
 html,body{overflow-x:clip}
+
+/* ChargeScope v3.1: catalog discovery and source transparency */
+.catalog-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.catalog-overview>div{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--stroke);padding:17px 18px;border-radius:13px;min-width:0}
+.catalog-overview span{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:1.2px}
+.catalog-overview strong{font-size:25px;font-weight:800;font-variant-numeric:tabular-nums}
+.catalog-explanation{font-size:12px;line-height:1.75;margin:0 0 18px}
+.catalog-explanation strong{color:var(--text)}
+.catalog-filter-panel{border:1px solid var(--stroke);background:var(--panel);border-radius:15px;padding:16px;margin-bottom:18px;display:grid;gap:14px}
+.catalog-filter-panel .search-box{width:100%;max-width:none;border-radius:9px;border-color:var(--stroke);background:var(--control)}
+.catalog-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;min-width:0}
+.catalog-filters>.field{min-width:0}
+.catalog-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:13px;min-width:0}
+.catalog-toolbar>.catalog-count{margin-left:auto}
+.favorites-switch{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);font-weight:720;cursor:pointer}
+.favorites-switch input{width:17px;height:17px}
+.directory-card{gap:12px}
+.directory-card .device-card-top{align-items:start}
+.directory-card .device-card-top>div{min-width:0}
+.favorite-device{background:var(--panel2);border:1px solid var(--stroke);color:var(--muted);border-radius:9px;min-width:37px;height:37px;display:grid;place-items:center;font-size:19px;flex-shrink:0}
+.favorite-device[aria-pressed=true]{color:#f1c56e;border-color:#8d7246}
+.directory-tags{display:flex;flex-wrap:wrap;gap:7px}
+.directory-year,.directory-status{font-size:10px;border-radius:7px;padding:5px 8px;background:var(--panel2);border:1px solid var(--stroke);color:var(--muted);font-weight:750}
+.directory-status.manufacturer{color:var(--mint)}
+.directory-status.needs-specs{color:#d6b581}
+.directory-card .device-data{min-height:26px}
+.directory-card .device-actions{flex-wrap:wrap;align-items:center}
+.directory-source{font-size:11px;color:var(--accent);font-weight:740;text-decoration:underline;text-underline-offset:3px}
+.catalog-pagination{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;margin-top:20px}
+.catalog-pagination>p{font-size:12px;color:var(--muted)}
+.catalog-pagination>button{min-width:190px}
+.device-spec-notice{font-size:12px;line-height:1.6;padding:11px 13px;border-radius:9px;background:var(--panel2);border:1px solid var(--stroke);color:var(--muted);margin:12px 0}
+.device-spec-notice:not([hidden]){display:block}
+@media(max-width:900px){
+ .catalog-overview{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .catalog-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+ .catalog-overview{gap:8px}
+ .catalog-overview>div{padding:13px}
+ .catalog-overview strong{font-size:21px}
+ .catalog-overview span{font-size:9px}
+ .catalog-filter-panel{padding:12px}
+ .catalog-filters{gap:9px}
+ .directory-card .device-actions{gap:9px}
+ .catalog-toolbar .catalog-count{margin-left:0;width:100%}
+}
+@media(max-width:335px){
+ .catalog-filters{grid-template-columns:1fr}
+}
