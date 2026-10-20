@@ -295,7 +295,7 @@ function exportCSV(){
   // Prevent spreadsheet formula injection from user-supplied phone names.
   const csvCell=value=>{
     const raw=String(value);
-    const safe=/^[\\s]*[=+@-]/.test(raw)?"'"+raw:raw;
+    const safe=/^\s*[=+@-]/.test(raw)?"'"+raw:raw;
     return '"'+safe.replaceAll('"','""')+'"';
   };
   const csv=rows.map(row=>row.map(csvCell).join(',')).join('\r\n');
