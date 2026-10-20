@@ -22,7 +22,10 @@ jobs:
         with:
           node-version: '22'
       - name: Run unit and site smoke tests
-        run: node --test tests/*.test.mjs
+        run: |
+          node --check app.js
+          node --check service-worker.js
+          node --test tests/*.test.mjs
   deploy:
     needs: test
     runs-on: ubuntu-latest
