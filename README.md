@@ -1,4 +1,4 @@
-# ChargeScope v3.2
+# ChargeScope v3.3
 
 ChargeScope is a static, privacy-friendly **charging-speed explorer** for phones and tablets. Browse devices, inspect manufacturer-sourced charging specifications, estimate a partial/full charging session, compare charger ratings, and optionally record your own measured charging tests.
 
@@ -7,6 +7,19 @@ ChargeScope is a static, privacy-friendly **charging-speed explorer** for phones
 ## Run locally
 
 Serve this directory over localhost (for example `python3 -m http.server 4173`) and open `http://localhost:4173`. The site is dependency-free at runtime. On HTTPS or localhost, its service worker can provide offline access after the app has been cached.
+
+## What's new in v3.3 — Phone-first quality of life
+
+- **Find any phone instantly:** a searchable, keyboard-accessible device picker with tokens, relevance ranking, favorite priority and a `/` or Ctrl/Command+K shortcut.
+- **Recent phones:** up to six locally remembered models with one-tap shortcuts and a clear-history control.
+- **Remember your setup:** stores last selected device, charger wattage, charging method/protocol assumption, conditions, and battery range in browser storage. Validates restored values and falls back when a model is gone.
+- **Mobile dock:** touch-friendly shortcuts to Estimate, Plan, Phones, and personal Tests, including safe-area padding for gesture navigation.
+- **Explained charging limits:** highlights whether the phone, charger/pad, or cable is the selected power bottleneck, and reinforces that a rated wattage is not constant or guaranteed power.
+- **Smarter brand changes:** prefers a model with usable published charging data.
+- **Polished responsive UI:** improved phone search, result interpretation, controls, text rhythm, and dark/light styling without external trackers or runtime dependencies.
+- **Regression protection:** focused unit tests and desktop, Android, iPhone, and tablet Playwright scenarios.
+
+Local preferences and search history do not sync across devices, and clearing browser data removes them. Charging times remain illustrative simulations, not measured device-specific charge curves.
 
 ## What's new in v3.2
 
