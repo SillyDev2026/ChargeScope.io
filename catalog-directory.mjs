@@ -77,7 +77,7 @@ const officialPartial={
   'Google|Pixel 11 Pro':{batteryMah:4850},
   'Google|Pixel 11 Pro XL':{batteryMah:5115}
 };
-const releaseId=(brand,model)=>('directory-'+brand+'-'+model).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const releaseId=(brand,model)=>('directory-'+brand+'-'+model.replaceAll('+','-plus')).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 export const DIRECTORY = ROWS.flatMap(([brand,year,names])=>
   names.split('|').map(model=>({
     id:releaseId(brand,model),brand,model,year,
