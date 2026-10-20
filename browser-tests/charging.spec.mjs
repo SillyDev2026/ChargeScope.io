@@ -69,3 +69,37 @@ test('theme toggle switches and persists',async({page})=>{
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
 });
+
+test('charging planner updates charger wattage and models milestones',async({page})=>{
+  await expect(page.getByRole('link',{name:'Planner'})).toBeVisible();
+  await expect(page.locator('#bestWattage')).not.toHaveText('—');
+  await expect(page.locator('#plannerEta')).not.toHaveText('—');
+  await expect(page.locator('#chargeMilestones li')).toHaveCount(4);
+  await page.locator('[data-wattage="45"]').click();
+  await expect(page.locator('#chargerW')).toHaveValue('45');
+  await expect(page.locator('.charger-row.selected')).toHaveCount(1);
+  await page.locator('[data-charge-range="0:100"]').click();
+  await expect(page.locator('#chargeMilestones li')).toHaveCount(6);
+});
+
+test('electricity cost responds to tariff and sessions without invalid output',async({page})=>{
+  const annual=page.locator('#annualCost');
+  await expect(annual).not.toHaveText('—');
+  const first=await annual.textContent();
+  await page.locator('#electricityRate').fill('0.40');
+  await expect(annual).not.toHaveText(first);
+  await page.locator('#electricityRate').fill('');
+  await expect(page.locator('#plannerError')).not.toBeEmpty();
+  await expect(annual).toHaveText('—');
+  await page.locator('#electricityRate').fill('0.20');
+  await expect(page.locator('#plannerError')).toBeEmpty();
+  await expect(annual).not.toHaveText('—');
+});
+
+test('invalid calculator inputs clear planner instead of displaying stale results',async({page})=>{
+  await page.locator('#chargerW').fill('');
+  await expect(page.locator('#bestWattage')).toHaveText('—');
+  await expect(page.locator('#chargerBars')).toBeEmpty();
+  await page.locator('#chargerW').fill('30');
+  await expect(page.locator('#bestWattage')).not.toHaveText('—');
+});
