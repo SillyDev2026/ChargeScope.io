@@ -26,6 +26,9 @@ jobs:
           node --check app.js
           node --check lab.mjs
           node --check lab-ui.mjs
+          node --check devices.mjs
+          node --check catalog-directory.mjs
+          node --check catalog-utils.mjs
           node --check service-worker.js
           node --test tests/*.test.mjs
       - name: Install browser test dependencies
@@ -55,7 +58,7 @@ jobs:
       - name: Stage static site
         run: |
           mkdir -p _site
-          cp index.html styles.css app.js core.mjs planner.mjs lab.mjs lab-ui.mjs devices.mjs icon.svg manifest.webmanifest service-worker.js .nojekyll _site/
+          cp index.html styles.css app.js core.mjs planner.mjs lab.mjs lab-ui.mjs devices.mjs catalog-directory.mjs catalog-utils.mjs icon.svg manifest.webmanifest service-worker.js .nojekyll _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
