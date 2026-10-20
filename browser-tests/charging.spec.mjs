@@ -188,3 +188,52 @@ test('favoriting a model persists after refresh and favorites-only filtering',as
   await expect(page.locator('.device-card')).toHaveCount(1);
   await expect(page.locator('.favorite-device')).toHaveAttribute('aria-pressed','true');
 });
+
+test('complete manufacturer record shows full detail sheet with primary-source link',async({page})=>{
+  await page.locator('#catalogSearch').fill('Galaxy S26 Ultra');
+  await expect(page.locator('.device-card')).toHaveCount(1);
+  await expect(page.locator('.directory-status')).toHaveText('Official • complete');
+  await page.locator('.source-details-button').click();
+  const dialog=page.locator('#specDialog');
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('#specDialogTitle')).toHaveText('Galaxy S26 Ultra');
+  await expect(page.locator('#specDialogFacts')).toContainText('60 W');
+  await expect(page.locator('#specDialogFacts')).toContainText('25 W');
+  await expect(page.locator('#specDialogSource')).toHaveAttribute('href',/samsung\.com/);
+  await page.locator('#specDialogClose').click();
+  await expect(dialog).toBeHidden();
+});
+
+test('Google partial specs use wireless rating and do not fabricate wired input',async({page})=>{
+  await page.locator('#catalogSearch').fill('Pixel 11 Pro XL');
+  await expect(page.locator('.device-card')).toHaveCount(1);
+  await expect(page.locator('.directory-status')).toHaveText('Official • partial');
+  await page.locator('.load-device').click();
+  await expect(page.locator('#batteryMah')).toHaveValue('5115');
+  await expect(page.locator('#wiredW')).toHaveValue('');
+  await expect(page.locator('#wirelessW')).toHaveValue('25');
+  await expect(page.locator('#chargeMethod')).toHaveValue('wireless');
+  await expect(page.locator('#timeRange')).not.toHaveText('—');
+  await expect(page.locator('#powerStat')).toHaveText('25W');
+  await expect(page.locator('#deviceEvidenceSummary')).toContainText('45W adapter');
+  await page.locator('#chargeMethod').selectOption('wired');
+  await expect(page.locator('#timeRange')).toHaveText('—');
+  await expect(page.locator('#formError')).toContainText('not confirmed');
+});
+
+test('editing official watts visibly removes verified claim',async({page})=>{
+  await expect(page.locator('#deviceEvidenceBadge')).toHaveText('Official • complete');
+  await page.locator('#wiredW').fill('55');
+  await expect(page.locator('#deviceEvidenceBadge')).toHaveText('Locally edited · unverified');
+  await page.locator('#wiredW').fill('68');
+  await expect(page.locator('#deviceEvidenceBadge')).toHaveText('Official • complete');
+});
+
+test('source confidence filter and curated CSV export work',async({page})=>{
+  await page.locator('#catalogStatus').selectOption('partial');
+  await expect(page.locator('.directory-status').first()).toHaveText('Official • partial');
+  const downloadEvent=page.waitForEvent('download');
+  await page.locator('#catalogExportCSV').click();
+  const download=await downloadEvent;
+  expect(download.suggestedFilename()).toBe('chargescope-phone-specifications.csv');
+});
