@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1022">
-  <meta name="description" content="ChargeScope v2.1 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
-  <meta property="og:title" content="ChargeScope v2.1 — Charging speed, explained">
+  <meta name="description" content="ChargeScope v2.2 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
+  <meta property="og:title" content="ChargeScope v2.2 — Charging speed, explained">
   <meta property="og:description" content="Compare phones, chargers and charging ranges with an editable, transparent estimator.">
-  <title>ChargeScope v2.1 — Universal Charging Calculator</title>
+  <title>ChargeScope v2.2 — Universal Charging Calculator</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
@@ -16,8 +16,8 @@
   <a class="skip-link" href="#calculator">Skip to calculator</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v2.1</span></span></a>
-      <nav class="nav" aria-label="Main navigation"><a href="#calculator">Calculator</a><a href="#compare">Compare</a><a href="#catalog">Devices</a><a href="#guide">Guide</a></nav>
+      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v2.2</span></span></a>
+      <nav class="nav" aria-label="Main navigation"><a href="#calculator">Calculator</a><a href="#planner">Planner</a><a href="#compare">Compare</a><a href="#catalog">Devices</a><a href="#guide">Guide</a></nav>
       <button type="button" class="icon-button theme-button" id="themeToggle" aria-label="Switch color theme" title="Switch color theme">☼</button>
     </div>
   </header>
@@ -25,16 +25,22 @@
   <main id="top">
     <section class="hero container">
       <div class="hero-copy">
-        <span class="eyebrow"><span class="live-dot" aria-hidden="true"></span> UNIVERSAL CHARGING ESTIMATOR <span class="eyebrow-divider">/</span> VERSION 2.1</span>
+        <span class="eyebrow"><span class="live-dot" aria-hidden="true"></span> UNIVERSAL CHARGING ESTIMATOR <span class="eyebrow-divider">/</span> VERSION 2.2</span>
         <h1>Charge smarter.<br><span class="gradient-text">Know the wait.</span></h1>
         <p class="hero-description">Estimate charging time for virtually any phone or tablet, compare charger wattages, and see what happens between 0% and 100%.</p>
-        <div class="hero-chips"><span>⚡ Wired + wireless</span><span>◉ Multi-brand profiles</span><span>▦ Any screen size</span></div>
+        <div class="hero-chips"><span>⚡ Wired + wireless</span><span>◉ Any brand</span><span>▦ Offline-ready</span></div>
+        <a class="hero-cta" href="#calculator">Estimate a charge <span aria-hidden="true">↗</span></a>
       </div>
-      <div class="hero-visual" aria-hidden="true"><div class="orb"></div><div class="phone-outline"><div class="phone-camera"></div><div class="phone-display"><span class="visual-lightning">ϟ</span><strong>80<span>%</span></strong><span class="visual-label">CHARGING ESTIMATE</span><div class="visual-meter"><i></i></div></div></div><div class="float-tag tag-a">⚡ 30W INPUT</div><div class="float-tag tag-b">↗ SMART TAPER</div></div>
+      <div class="hero-summary" aria-label="ChargeScope highlights">
+        <div class="hero-summary-top"><div><span class="overline">YOUR CHARGING WORKSPACE</span><h2>From wattage<br>to wait time.</h2></div><span class="hero-spark" aria-hidden="true">ϟ</span></div>
+        <div class="hero-metric"><span>01</span><div><strong>Any battery range</strong><small>0–100%, or your own interval</small></div><span aria-hidden="true">↗</span></div>
+        <div class="hero-metric"><span>02</span><div><strong>Choose a charger</strong><small>Compare wattages side by side</small></div><span aria-hidden="true">↗</span></div>
+        <div class="hero-metric"><span>03</span><div><strong>Plan your day</strong><small>Charge milestones and energy cost</small></div><span aria-hidden="true">↗</span></div>
+      </div>
     </section>
 
     <section id="calculator" class="container section">
-      <div class="section-title"><div><span class="overline">01 / CALCULATOR</span><h2>Your charging lab</h2><p>Choose a device or enter your own specifications. All preset values can be edited.</p></div><span class="model-tag">ESTIMATION ENGINE 2.1</span></div>
+      <div class="section-title"><div><span class="overline">01 / CALCULATOR</span><h2>Your charging lab</h2><p>Choose a device or enter your own specifications. All preset values can be edited.</p></div><span class="model-tag">ESTIMATION ENGINE 2.2</span></div>
       <div class="calc-grid">
         <form class="panel form-panel" id="calcForm" novalidate>
           <div class="panel-heading"><div class="panel-icon">▣</div><div><h3>Device profile</h3><p>Select your phone or create a custom profile.</p></div></div>
@@ -98,19 +104,52 @@
       </div>
     </section>
 
+    <section id="planner" class="container section">
+      <div class="section-title"><div><span class="overline">02 / CHARGING PLANNER</span><h2>Find your charging sweet spot</h2><p>Explore common adapter wattages, plan when to unplug, and estimate energy costs. Values are simulations, not lab measurements.</p></div><span class="model-tag">NEW IN V2.2</span></div>
+      <div class="planner-layout">
+        <article class="panel planner-card charger-planner">
+          <div class="planner-head"><span class="planner-icon" aria-hidden="true">ϟ</span><div><h3>Charger wattage explorer</h3><p>See how much a stronger charger might help—if the phone, cable, and protocol support it.</p></div></div>
+          <div class="planner-highlight"><div><span class="overline">MODELED SWEET SPOT</span><strong id="bestWattage">—</strong></div><p id="sweetSpotNote">The calculator will suggest a wattage from common charger sizes.</p></div>
+          <div class="wattage-presets" role="group" aria-label="Set charger wattage">
+            <button type="button" data-wattage="15">15W</button><button type="button" data-wattage="20">20W</button><button type="button" data-wattage="30">30W</button><button type="button" data-wattage="45">45W</button><button type="button" data-wattage="65">65W</button><button type="button" data-wattage="100">100W</button>
+          </div>
+          <p class="planner-small-label">Modeled duration by charger rating · shorter is better</p>
+          <div id="chargerBars" class="charger-bars" aria-label="Charging time by adapter wattage"></div>
+        </article>
+        <div class="planner-side">
+          <article class="panel planner-card">
+            <div class="planner-head"><span class="planner-icon cool" aria-hidden="true">◷</span><div><h3>Charge timeline</h3><p id="plannerStatus">Waiting for a charge estimate.</p></div></div>
+            <div class="planner-eta"><span>Estimated finish if plugged in now</span><strong id="plannerEta">—</strong><small id="plannerEtaDetail">Uses the modeled charging midpoint and your device's local clock.</small></div>
+            <ol id="chargeMilestones" class="milestone-list" aria-label="Charge milestones"></ol>
+          </article>
+          <article class="panel planner-card cost-card">
+            <div class="planner-head"><span class="planner-icon mint" aria-hidden="true">$</span><div><h3>Electricity cost</h3><p>Estimate charging energy costs with your own electricity rate.</p></div></div>
+            <div class="form-row cost-fields">
+              <label class="field"><span>Electricity ($/kWh)</span><input id="electricityRate" type="number" min="0" max="10" step="0.01" inputmode="decimal" value="0.20"></label>
+              <label class="field"><span>Charging sessions/week</span><input id="chargesPerWeek" type="number" min="0" max="100" step="1" inputmode="numeric" value="7"></label>
+            </div>
+            <div class="cost-results"><div><span>Per session</span><strong id="sessionCost">—</strong></div><div><span>Per year</span><strong id="annualCost">—</strong></div></div>
+            <p class="micro-note" id="wallEnergy">Estimated wall energy will appear here.</p>
+            <p class="form-error" id="plannerError" role="status"></p>
+            <p class="micro-note">Uses assumed wall-to-battery efficiencies of 85% wired or 70% wireless. Excludes standby losses and local utility fees. Enter your own tariff.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section id="compare" class="container section">
-      <div class="section-title"><div><span class="overline">02 / COMPARISON</span><h2>Compare charging speeds</h2><p>Compare your current edited phone against two other models under the same charging conditions.</p></div></div>
+      <div class="section-title"><div><span class="overline">03 / COMPARISON</span><h2>Compare charging speeds</h2><p>Compare your current edited phone against two other models under the same charging conditions.</p></div></div>
       <div class="panel compare-panel"><div class="compare-picker"><label class="field"><span>Device 1</span><select id="compareA"></select></label><label class="field"><span>Device 2</span><select id="compareB"></select></label><label class="field"><span>Device 3</span><select id="compareC"></select></label></div><div id="compareResults" class="compare-results" aria-live="polite"></div><p class="micro-note">Uses the calculator's selected charger and charging conditions. A phone's quoted W rating does not confirm protocol compatibility.</p></div>
     </section>
 
     <section id="catalog" class="container section">
-      <div class="section-title"><div><span class="overline">03 / DEVICE DATABASE</span><h2>Browse the catalog</h2><p>Search example models from major brands, or save your own profile for any manufacturer. Example specifications may vary by region.</p></div></div>
+      <div class="section-title"><div><span class="overline">04 / DEVICE DATABASE</span><h2>Browse the catalog</h2><p>Search example models from major brands, or save your own profile for any manufacturer. Example specifications may vary by region.</p></div></div>
       <div class="catalog-tools"><label class="search-box"><span aria-hidden="true">⌕</span><input id="catalogSearch" type="search" placeholder="Search model or brand" aria-label="Search device catalog"></label><span id="catalogCount" class="catalog-count"></span></div>
       <div id="catalogGrid" class="catalog-grid"></div>
     </section>
 
     <section id="guide" class="container section">
-      <div class="section-title"><div><span class="overline">04 / LEARN</span><h2>How charging really works</h2><p>The essentials for accurate expectations.</p></div></div>
+      <div class="section-title"><div><span class="overline">05 / LEARN</span><h2>How charging really works</h2><p>The essentials for accurate expectations.</p></div></div>
       <div class="guide-grid">
         <article class="guide-card"><span class="guide-icon">01</span><h3>Wattage isn't constant</h3><p>Fast charging usually slows as the battery fills. The final 10–20% often takes disproportionately longer.</p></article>
         <article class="guide-card"><span class="guide-icon">02</span><h3>The phone sets a limit</h3><p>Using a 100W charger with a 30W-rated phone will not automatically produce 100W charging.</p></article>
@@ -119,7 +158,7 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v2.1 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v2.2 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script type="module" src="./app.js"></script>
 </body>
