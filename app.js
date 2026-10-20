@@ -1,5 +1,6 @@
 import {estimateCharge, normalizeDevice, formatMinutes, VERSION} from './core.mjs';
 import {DEVICES} from './devices.mjs';
+import {setupPlanner, renderPlanner} from './planner.mjs';
 
 const $ = id => document.getElementById(id);
 const LIST_KEY = 'chargescope-v2-devices';
@@ -111,12 +112,12 @@ function update() {
   try {
     const result=estimateCharge(readCurrentDevice(),readOptions());
     latest=result;showError('');
-    renderResult(result);renderComparison();
+    renderResult(result);renderComparison();renderPlanner(result);
   } catch(e) {
     latest=null;showError(e.message||'Check your inputs');
     $('timeRange').textContent='—';$('centralTime').textContent='Enter valid specifications to calculate.';
     for(const id of ['gainStat','powerStat','energyStat'])$(id).textContent='—';
-    $('curve').replaceChildren();$('warnings').replaceChildren();renderComparison();
+    $('curve').replaceChildren();$('warnings').replaceChildren();renderComparison();renderPlanner(null);
   }
 }
 function renderResult(r){
@@ -313,6 +314,11 @@ function setTheme(mode){
 function init(){
   let mode='dark';try{mode=localStorage.getItem(THEME_KEY)||'dark';}catch(_){}
   setTheme(mode==='light'?'light':'dark');
+  setupPlanner({setChargerW:(watts)=>{
+    $('chargerW').value=String(watts);
+    update();
+    $('chargerW').focus({preventScroll:true});
+  }});
   $('themeToggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
   populateBrands('Motorola');selectDevice(defaultId);
   $('brandSelect').addEventListener('change',()=>{
