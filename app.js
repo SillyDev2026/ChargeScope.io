@@ -246,6 +246,35 @@ function renderComparison(){
   });
 }
 
+function filteredCatalog(){
+  return queryCatalog(allDevices(),{
+    query:$('catalogSearch').value,year:$('catalogYear').value,
+    brand:$('catalogBrand').value,status:$('catalogStatus').value,
+    sort:$('catalogSort').value,favoritesOnly:$('catalogFavoritesOnly').checked,
+    favorites:favoriteIds
+  });
+}
+function exportCatalogCSV(){
+  const devices=filteredCatalog();
+  if(!devices.length)return notify('No matching phone specifications to export');
+  const cols=['Brand','Model','Year','Battery_mAh','Wired_max_W','Wireless_max_W','Fast_charge_adapter_W','Fast_charge_claim','Protocol','Region','Spec_status','Checked_on','Manufacturer_URL'];
+  const rows=devices.map(d=>[
+    d.brand,d.model,d.year??'',d.batteryMah??'',d.wiredW??'',d.wirelessW??'',
+    d.chargerRecommendationW??'',d.advertisedChargeClaim||'',
+    d.protocol||'',d.region||'',d.specStatus||'',d.verifiedAt||'',d.sourceUrl||''
+  ]);
+  const safe=v=>{
+    const str=String(v??'');
+    const escaped=/^\s*[=+@-]/.test(str)?"'"+str:str;
+    return '"'+escaped.replaceAll('"','""')+'"';
+  };
+  const csv=[cols,...rows].map(r=>r.map(safe).join(',')).join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download='chargescope-phone-specifications.csv';
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  notify('Exported '+devices.length+' phone records, including evidence links');
+}
 function renderCatalog(reset=true) {
   if(reset)catalogVisible=CATALOG_PAGE_SIZE;
   const all=allDevices();
@@ -254,12 +283,7 @@ function renderCatalog(reset=true) {
   $('catalogBrands').textContent=stats.brands.toLocaleString();
   $('catalogReady').textContent=stats.ready.toLocaleString();
   $('catalogSourced').textContent=stats.sourced.toLocaleString();
-  const matches=queryCatalog(all,{
-    query:$('catalogSearch').value,year:$('catalogYear').value,
-    brand:$('catalogBrand').value,status:$('catalogStatus').value,
-    sort:$('catalogSort').value,favoritesOnly:$('catalogFavoritesOnly').checked,
-    favorites:favoriteIds
-  });
+  const matches=filteredCatalog();
   $('catalogCount').textContent=matches.length+' matching model'+(matches.length===1?'':'s');
   const displayed=matches.slice(0,catalogVisible);
   $('catalogPageStatus').textContent=matches.length?'Showing '+displayed.length+' of '+matches.length+' matching models':'No models match your filters.';
@@ -476,6 +500,7 @@ function init(){
     $('catalogSearch').value='';$('catalogYear').value='all';$('catalogBrand').value='all';$('catalogStatus').value='all';$('catalogSort').value='newest';$('catalogFavoritesOnly').checked=false;renderCatalog();
   });
   $('catalogLoadMore').addEventListener('click',()=>{catalogVisible+=CATALOG_PAGE_SIZE;renderCatalog(false);});
+  $('catalogExportCSV').addEventListener('click',exportCatalogCSV);
   $('copyResult').addEventListener('click',()=>{if(!latest)return notify('Calculate first');copyText(latest.device.brand+' '+latest.device.model+': '+latest.options.start+'–'+latest.options.end+'% in approx. '+formatMinutes(latest.minMinutes)+' to '+formatMinutes(latest.maxMinutes)+' ('+latest.options.chargerW+'W charger). Estimate only.');});
   $('shareLink').addEventListener('click',()=>{try{copyText(getShareUrl());}catch(e){showError(e.message);}});
   $('exportCSV').addEventListener('click',exportCSV);
