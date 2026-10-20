@@ -332,6 +332,13 @@ function init(){
     $(n).addEventListener('input',e=>setPair(which,e.target.value));
     $(r).addEventListener('input',e=>setPair(which,e.target.value));
   }
+  for(const button of document.querySelectorAll('[data-charge-range]')){
+    button.addEventListener('click',()=>{
+      const [from,to]=button.dataset.chargeRange.split(':').map(Number);
+      setPair('from',from);setPair('to',to);
+      notify('Battery range: '+from+'–'+to+'%');
+    });
+  }
   form.addEventListener('submit',event=>{event.preventDefault();update();if(latest)notify('Estimate updated');});
   $('resetButton').addEventListener('click',()=>{selectedId=defaultId;populateBrands('Motorola');selectDevice(defaultId);
     for(const [id,value] of Object.entries({chargerW:30,cableW:60,chargeMethod:'wired',compatibility:'matched',temperature:'normal',activity:'screen'}))$(id).value=value;
