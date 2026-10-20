@@ -103,3 +103,42 @@ test('invalid calculator inputs clear planner instead of displaying stale result
   await page.locator('#chargerW').fill('30');
   await expect(page.locator('#bestWattage')).not.toHaveText('—');
 });
+
+test('new dashboard and real test section appear without horizontal overflow',async({page})=>{
+  await expect(page.getByRole('heading',{name:/Understand every/i})).toBeVisible();
+  await expect(page.getByRole('link',{name:'Real tests'})).toBeVisible();
+  await expect(page.locator('#logDeviceName')).toContainText('Motorola');
+  await expect(page.locator('#batteryOrb')).toBeVisible();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(2);
+});
+test('quick phone selections update the calculator and personal log',async({page})=>{
+  await page.locator('[data-quick-device="samsung-s25-ultra"]').click();
+  await expect(page.locator('#editBrand')).toHaveValue('Samsung');
+  await expect(page.locator('#logDeviceName')).toContainText('Samsung');
+  await page.locator('[data-charge-range="0:100"]').click();
+  await expect(page.locator('#orbEnd')).toHaveText('100%');
+});
+test('two real charge tests produce personal estimates and persist after reload',async({page})=>{
+  const minutes=await page.locator('#centralTime').textContent();
+  await page.locator('#observedMinutes').fill('70');
+  await page.locator('#saveSession').click();
+  await expect(page.locator('#sessionCount')).toHaveText('1');
+  await expect(page.locator('#personalizedTime')).toHaveText('Not calibrated yet');
+  await page.locator('#observedMinutes').fill('75');
+  await page.locator('#saveSession').click();
+  await expect(page.locator('#sessionCount')).toHaveText('2');
+  await expect(page.locator('#personalizedTime')).not.toHaveText('Not calibrated yet');
+  await page.reload();
+  await expect(page.locator('#sessionCount')).toHaveText('2');
+  await expect(page.locator('.session-row')).toHaveCount(2);
+  await page.locator('.delete-session').first().click();
+  await expect(page.locator('#sessionCount')).toHaveText('1');
+});
+test('invalid measured minutes never save or crash the page',async({page})=>{
+  await page.locator('#observedMinutes').fill('0');
+  await page.locator('#saveSession').click();
+  await expect(page.locator('#sessionCount')).toHaveText('0');
+  await expect(page.locator('#sessionMessage')).toContainText('1–1,440');
+  await expect(page.locator('#timeRange')).not.toHaveText('—');
+});
