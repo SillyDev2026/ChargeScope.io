@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1022">
-  <meta name="description" content="ChargeScope v3.1 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
-  <meta property="og:title" content="ChargeScope v3.1 — Charging speed, explained">
+  <meta name="description" content="ChargeScope v3.2 estimates charging times for phones and tablets with any charger. Compare wattages, battery ranges, and charging conditions across brands.">
+  <meta property="og:title" content="ChargeScope v3.2 — Charging speed, explained">
   <meta property="og:description" content="Compare phones, chargers and charging ranges with an editable, transparent estimator.">
-  <title>ChargeScope v3.1 — Universal Charging Calculator</title>
+  <title>ChargeScope v3.2 — Universal Charging Calculator</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
@@ -16,7 +16,7 @@
   <a class="skip-link" href="#calculator">Skip to calculator</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v3.1</span></span></a>
+      <a class="brand" href="#top" aria-label="ChargeScope home"><span class="brand-mark" aria-hidden="true">ϟ</span><span>Charge<span class="brand-accent">Scope</span><span class="version">v3.2</span></span></a>
       <nav class="nav" aria-label="Main navigation"><a href="#calculator">Calculator</a><a href="#planner">Planner</a><a href="#lab">Real tests</a><a href="#compare">Compare</a><a href="#catalog">Devices</a><a href="#guide">Guide</a></nav>
       <button type="button" class="icon-button theme-button" id="themeToggle" aria-label="Switch color theme" title="Switch color theme">☼</button>
     </div>
@@ -32,7 +32,7 @@
         <div class="trust-strip"><span>● Runs in your browser</span><span>◈ Any phone brand</span><span>◎ Private test log</span></div>
       </div>
       <div class="hero-console" aria-hidden="true">
-        <div class="console-header"><span class="console-label">● CHARGESCOPE LAB</span><span>v3.1 / MODEL</span></div>
+        <div class="console-header"><span class="console-label">● CHARGESCOPE LAB</span><span>v3.2 / MODEL</span></div>
         <div class="console-topline"><div><small>YOUR NEXT CHARGE</small><strong>20<span>%</span> <em>→</em> 80<span>%</span></strong></div><div class="console-charge-symbol">ϟ</div></div>
         <div class="console-graph"><svg viewBox="0 0 430 140" preserveAspectRatio="none"><defs><linearGradient id="heroLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#4bc6cc"/><stop offset="100%" stop-color="#a9b4ff"/></linearGradient></defs><path d="M2 124 C45 115 73 91 107 66 S168 26 216 16 S325 5 428 3" stroke="url(#heroLine)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M2 124 C45 115 73 91 107 66 S168 26 216 16 S325 5 428 3 V140 H2 Z" fill="#75e4d6" fill-opacity=".055"/><path d="M0 140H430M0 70H430M0 0H430" stroke="currentColor" stroke-opacity=".13" stroke-dasharray="5 6"/></svg></div>
         <div class="console-bottom"><div><small>01 / PREDICT</small><strong>Estimate time</strong></div><div><small>02 / TEST</small><strong>Log results</strong></div><div><small>03 / IMPROVE</small><strong>Personalize</strong></div></div>
@@ -51,6 +51,14 @@
           </div>
           <div class="quick-picks" aria-label="Quick phone profiles"><span>QUICK PICK</span><button type="button" data-quick-device="moto-razr-ultra-2026">Razr Ultra</button><button type="button" data-quick-device="samsung-s25-ultra">Galaxy Ultra</button><button type="button" data-quick-device="apple-iphone-16-pro-max">iPhone Pro Max</button><button type="button" data-quick-device="pixel-10-pro-xl">Pixel Pro XL</button></div><div class="inline-actions"><button type="button" class="text-action" id="newDevice">+ New custom device</button><button type="button" class="text-action" id="saveDevice">Save profile</button></div>
           <p id="deviceSpecNotice" class="device-spec-notice" role="status" hidden></p>
+          <div id="deviceEvidence" class="source-evidence" aria-label="Selected device source">
+            <div class="source-evidence-header"><span id="deviceEvidenceBadge" class="micro-tag">Checking data</span><span id="deviceEvidenceDate"></span></div>
+            <p id="deviceEvidenceSummary">Choose a device to inspect the underlying specifications.</p>
+            <div class="source-evidence-actions">
+              <button type="button" class="text-action" id="deviceDetailsButton">View detailed specifications ↗</button>
+              <a id="deviceEvidenceLink" href="#" target="_blank" rel="noopener noreferrer" hidden>Official manufacturer source ↗</a>
+            </div>
+          </div>
           <div class="compact-fields">
             <label class="field"><span>Brand name</span><input type="text" id="editBrand" maxlength="60" placeholder="e.g. Motorola" autocomplete="off"></label>
             <label class="field"><span>Model name</span><input type="text" id="editModel" maxlength="100" placeholder="e.g. Razr Ultra" autocomplete="off"></label>
@@ -174,17 +182,17 @@
 
     <section id="catalog" class="container section">
       <div class="section-title"><div><span class="overline">05 / DEVICE DATABASE</span><h2>Explore phones released in 2024–2026</h2><p>Browse models across major brands, find known charging specs, and complete missing details for your specific region.</p></div></div>
-      <div class="catalog-overview"><div><span>LISTED MODELS</span><strong id="catalogTotal">—</strong></div><div><span>BRANDS</span><strong id="catalogBrands">—</strong></div><div><span>READY TO ESTIMATE</span><strong id="catalogReady">—</strong></div><div><span>YEAR COVERAGE</span><strong>2024–2026</strong></div></div>
-      <p class="catalog-explanation">This is a curated device directory, not every global or regional SKU. <strong>Manufacturer specs</strong> are linked to a source; <strong>editable examples</strong> need checking; <strong>specs needed</strong> means the app will ask for charging details rather than invent them. Charging times are simulated, not measured benchmarks.</p>
+      <div class="catalog-overview"><div><span>LISTED MODELS</span><strong id="catalogTotal">—</strong></div><div><span>BRANDS</span><strong id="catalogBrands">—</strong></div><div><span>READY TO ESTIMATE</span><strong id="catalogReady">—</strong></div><div><span>MANUFACTURER-SOURCED</span><strong id="catalogSourced">—</strong></div></div>
+      <p class="catalog-explanation">A curated 2024–2026 directory, not every regional SKU. <strong>Official · complete</strong> means battery and wired/wireless limits were published. <strong>Official · partial</strong> means only certain fields were confirmed. Unknown fields stay blank—an adapter recommendation is <strong>not</strong> a verified maximum phone input. All charge-time results remain simulations.</p>
       <div class="catalog-filter-panel">
         <label class="search-box"><span aria-hidden="true">⌕</span><input id="catalogSearch" type="search" placeholder="Search phone, model, or brand" aria-label="Search device catalog"></label>
         <div class="catalog-filters">
           <label class="field"><span>Release year</span><select id="catalogYear"><option value="all">All years</option><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="other">Older/unknown</option></select></label>
           <label class="field"><span>Brand</span><select id="catalogBrand"><option value="all">All brands</option></select></label>
-          <label class="field"><span>Specifications</span><select id="catalogStatus"><option value="all">All records</option><option value="manufacturer">Manufacturer sourced</option><option value="example">Editable examples</option><option value="needs-specs">Need specs</option></select></label>
-          <label class="field"><span>Sort by</span><select id="catalogSort"><option value="newest">Newest year</option><option value="oldest">Oldest year</option><option value="brand">Brand A–Z</option><option value="wattage">Wired wattage</option></select></label>
+          <label class="field"><span>Specifications</span><select id="catalogStatus"><option value="all">All records</option><option value="manufacturer">Official • complete</option><option value="partial">Official • partial</option><option value="example">Illustrative examples</option><option value="needs-specs">Need specs</option></select></label>
+          <label class="field"><span>Sort by</span><select id="catalogSort"><option value="newest">Newest year</option><option value="oldest">Oldest year</option><option value="brand">Brand A–Z</option><option value="wattage">Wired wattage</option><option value="battery">Battery size</option><option value="sourced">Evidence quality</option></select></label>
         </div>
-        <div class="catalog-toolbar"><label class="favorites-switch"><input id="catalogFavoritesOnly" type="checkbox"> Show favorites only</label><button id="catalogClearFilters" type="button" class="text-action">Clear filters</button><span id="catalogCount" class="catalog-count"></span></div>
+        <div class="catalog-toolbar"><label class="favorites-switch"><input id="catalogFavoritesOnly" type="checkbox"> Show favorites only</label><button id="catalogClearFilters" type="button" class="text-action">Clear filters</button><button id="catalogExportCSV" type="button" class="text-action">Export matching specs CSV ↗</button><span id="catalogCount" class="catalog-count"></span></div>
       </div>
       <div id="catalogGrid" class="catalog-grid"></div>
       <div class="catalog-pagination"><button type="button" id="catalogLoadMore" class="secondary-button" hidden>Load more models ↓</button><p id="catalogPageStatus" aria-live="polite"></p></div>
@@ -200,7 +208,27 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v3.1 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">ϟ</span> Charge<span class="brand-accent">Scope</span></a><p>v3.2 · No accounts · No external trackers · Estimates only</p><a href="https://github.com/SillyDev2026/ChargeScope.io" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a></div></footer>
+  <dialog id="specDialog" class="spec-dialog" aria-labelledby="specDialogTitle">
+    <div class="spec-dialog-shell">
+      <div class="spec-dialog-heading">
+        <div><span id="specDialogBrand" class="overline">DEVICE SPECIFICATIONS</span><h2 id="specDialogTitle">Phone details</h2><p id="specDialogSubtitle"></p></div>
+        <button type="button" id="specDialogClose" class="icon-button" aria-label="Close specifications">×</button>
+      </div>
+      <div class="spec-dialog-section">
+        <span id="specDialogStatus" class="micro-tag">Data confidence</span>
+        <div id="specDialogFacts" class="spec-facts" role="list"></div>
+        <p id="specDialogEvidence" class="spec-evidence"></p>
+        <p id="specDialogProtocol" class="spec-evidence"></p>
+        <p id="specDialogNotes" class="spec-evidence"></p>
+      </div>
+      <div class="spec-dialog-bottom">
+        <a id="specDialogSource" class="primary-button" href="#" target="_blank" rel="noopener noreferrer" hidden>Read official specifications ↗</a>
+        <button id="specDialogUse" type="button" class="secondary-button">Use in calculator</button>
+      </div>
+      <p class="micro-note">Published adapter recommendations and claimed charge times are not independently measured device input limits. Phone models may vary by country, hardware revision, charger and firmware.</p>
+    </div>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script type="module" src="./app.js"></script>
 </body>
