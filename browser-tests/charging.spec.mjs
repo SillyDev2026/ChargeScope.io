@@ -147,3 +147,44 @@ test('invalid measured minutes never save or crash the page',async({page})=>{
   await expect(page.locator('#sessionMessage')).toContainText('1–1,440');
   await expect(page.locator('#timeRange')).not.toHaveText('—');
 });
+
+test('2024–2026 catalog filters by release year and supports pagination',async({page})=>{
+  await expect(page.locator('#catalogTotal')).not.toHaveText('—');
+  await expect(page.locator('.device-card')).toHaveCount(24);
+  await page.locator('#catalogYear').selectOption('2026');
+  await expect(page.locator('.directory-year').first()).toHaveText('2026');
+  await expect(page.locator('#catalogCount')).toContainText('matching');
+  await page.locator('#catalogBrand').selectOption('Apple');
+  await expect(page.locator('.device-brand').first()).toHaveText('Apple');
+  await page.locator('#catalogClearFilters').click();
+  await expect(page.locator('#catalogYear')).toHaveValue('all');
+  await page.locator('#catalogLoadMore').click();
+  await expect(page.locator('.device-card')).toHaveCount(48);
+});
+
+test('directory items without charging specs request data instead of making estimates',async({page})=>{
+  await page.locator('#catalogSearch').fill('iPhone Duo');
+  await expect(page.locator('.device-card')).toHaveCount(1);
+  await expect(page.locator('.directory-status')).toHaveText('Specs needed');
+  await page.locator('.load-device').click();
+  await expect(page.locator('#formError')).toBeVisible();
+  await expect(page.locator('#timeRange')).toHaveText('—');
+  await expect(page.locator('#deviceSpecNotice')).toBeVisible();
+  await expect(page.locator('#batteryMah')).toHaveValue('');
+  await expect(page.locator('#wiredW')).toHaveValue('');
+  await page.locator('#batteryMah').fill('5000');
+  await page.locator('#wiredW').fill('30');
+  await page.locator('#wirelessW').fill('0');
+  await expect(page.locator('#timeRange')).not.toHaveText('—');
+});
+
+test('favoriting a model persists after refresh and favorites-only filtering',async({page})=>{
+  await page.locator('#catalogSearch').fill('Pixel 11 Pro XL');
+  await expect(page.locator('.device-card')).toHaveCount(1);
+  await page.locator('.favorite-device').click();
+  await expect(page.locator('.favorite-device')).toHaveAttribute('aria-pressed','true');
+  await page.reload();
+  await page.locator('#catalogFavoritesOnly').check();
+  await expect(page.locator('.device-card')).toHaveCount(1);
+  await expect(page.locator('.favorite-device')).toHaveAttribute('aria-pressed','true');
+});
