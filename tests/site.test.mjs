@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 test('static site has all required assets',()=>{
-  for(const file of ['index.html','styles.css','app.js','core.mjs','devices.mjs','icon.svg','manifest.webmanifest','service-worker.js'])
+  for(const file of ['index.html','styles.css','app.js','core.mjs','devices.mjs','catalog-directory.mjs','catalog-utils.mjs','icon.svg','manifest.webmanifest','service-worker.js'])
     assert.ok(fs.statSync(new URL('../'+file,import.meta.url)).size>0,file);
 });
 test('calculator and comparison controls exist',()=>{
@@ -23,5 +23,9 @@ test('responsive and reduced-motion rules exist',()=>{
 test('device presets are labelled examples',async()=>{
   const {DEVICES}=await import('../devices.mjs');
   assert.ok(DEVICES.length>=30);
-  for(const d of DEVICES)assert.match(d.source,/example/i);
+  for(const d of DEVICES){
+    assert.ok(['example','manufacturer','needs-specs'].includes(d.specStatus));
+    assert.ok(typeof d.source==='string'&&d.source.length>0);
+    if(d.specStatus==='needs-specs')assert.equal(d.wiredW,null);
+  }
 });
