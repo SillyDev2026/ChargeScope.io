@@ -1,4 +1,4 @@
-# ChargeScope v2
+# ChargeScope v2.2
 
 A responsive, offline-capable phone charging estimator that supports an extensible device catalog and fully editable custom phone profiles.
 
@@ -26,8 +26,8 @@ Mobile-first UI with responsive grids for narrow Android phones, iPhones, foldab
 - Add, save, search, and delete custom phones using local browser storage
 - Compare up to three devices under identical charger assumptions
 - Copy results, share calculation links, export CSV
-- Offline-capable installable PWA when served over HTTPS
+- Charging Planner with wattage sweet spot, charging milestones, estimated finish clock and editable energy tariff\n- Offline-capable installable PWA when served over HTTPS
 
-## License
+## Model limitations\n\nCharge times and electricity cost are simulated, not USB-PD measurements or a real power meter. The charger sweet spot assumes compatible charging protocols and the selected cable rating. Battery health or long-term degradation are not predicted.\n\n## License
 
 MIT — see LICENSE.
