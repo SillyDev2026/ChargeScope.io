@@ -8,7 +8,8 @@ test.beforeEach(async ({page})=>{
 test('every viewport has usable navigation without horizontal page overflow',async({page})=>{
   await expect(page.getByRole('link',{name:'Compare'})).toBeVisible();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
-  expect(overflow).toBeLessThanOrEqual(2);
+  const offenders=overflow>2?await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,className:typeof el.className==='string'?el.className:'',right:Math.round(el.getBoundingClientRect().right)})).filter(x=>x.right>window.innerWidth+2).slice(0,12)):[];
+  expect(overflow,JSON.stringify(offenders)).toBeLessThanOrEqual(2);
 });
 
 test('preset ranges update the numeric inputs and estimate',async({page})=>{
