@@ -31,7 +31,7 @@ export function normalizeWorkspace(raw,knownIds){
   const value=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};
   const previous=value.settings&&typeof value.settings==='object'?value.settings:{};
   const start=validNumber(previous.start,0,99,20);
-  const end=validNumber(previous.end,start+1,100,80);
+  const end=validNumber(previous.end,start+1,100,Math.max(start+1,80));
   return {
     deviceId:knownIds.includes(value.deviceId)?value.deviceId:null,
     settings:{
