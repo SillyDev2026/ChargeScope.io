@@ -13,11 +13,18 @@ let latest = null;
 let toastTimer;
 
 function readSaved() {
-  try {
-    const values = JSON.parse(localStorage.getItem(LIST_KEY) || '[]');
-    if (!Array.isArray(values)) return [];
-    return values.slice(0,100).map(normalizeDevice).filter(d=>d.id.startsWith('custom-'));
-  } catch (_) { return []; }
+  let values;
+  try { values = JSON.parse(localStorage.getItem(LIST_KEY) || '[]'); }
+  catch (_) { return []; }
+  if (!Array.isArray(values)) return [];
+  const unique = new Map();
+  for (const item of values.slice(0, 100)) {
+    try {
+      const d = normalizeDevice(item);
+      if (d.id.startsWith('custom-')) unique.set(d.id, d);
+    } catch (_) { /* Skip one broken profile without hiding all the others. */ }
+  }
+  return [...unique.values()];
 }
 function persistSaved() {
   try {localStorage.setItem(LIST_KEY, JSON.stringify(savedDevices));return true;}
@@ -75,10 +82,11 @@ function readCurrentDevice(){
   });
 }
 function readOptions() {
+  const numeric = id => $(id).value.trim() === '' ? NaN : Number($(id).value);
   return {
-    start:Number($('fromNumber').value),end:Number($('toNumber').value),
-    method:$('chargeMethod').value,chargerW:Number($('chargerW').value),
-    cableW:Number($('cableW').value),compatibility:$('compatibility').value,
+    start:numeric('fromNumber'),end:numeric('toNumber'),
+    method:$('chargeMethod').value,chargerW:numeric('chargerW'),
+    cableW:numeric('cableW'),compatibility:$('compatibility').value,
     temperature:$('temperature').value,activity:$('activity').value
   };
 }
@@ -159,21 +167,25 @@ function drawCurve(r) {
 }
 function populateComparison(){
   const devices=allDevices();
-  const presets=[defaultId,'samsung-s25-ultra','apple-iphone-16-pro-max'];
+  const presets=['__current__','samsung-s25-ultra','apple-iphone-16-pro-max'];
   for(const [i,id] of ['compareA','compareB','compareC'].entries()){
     const select=$(id),old=select.value||presets[i];
-    select.replaceChildren(...devices.map(d=>option(d.id,d.brand+' '+d.model)));
-    select.value=devices.some(d=>d.id===old)?old:devices[i%devices.length].id;
+    select.replaceChildren(option('__current__','Current edited phone'),...devices.map(d=>option(d.id,d.brand+' '+d.model)));
+    select.value=old==='__current__'||devices.some(d=>d.id===old)?old:presets[i];
   }
 }
 function renderComparison(){
   const wrap=$('compareResults');wrap.replaceChildren();
-  let selected;
-  try{selected=[$('compareA'),$('compareB'),$('compareC')].map(s=>getDevice(s.value)).filter(Boolean);}
-  catch(_){return;}
   const opts=readOptions();
-  const rows=selected.map(d=>{
-    try{return {d,r:estimateCharge(d,opts)};}catch(e){return {d,error:e.message};}
+  const rows=[$('compareA'),$('compareB'),$('compareC')].map(select=>{
+    try {
+      const d=select.value==='__current__'?readCurrentDevice():getDevice(select.value);
+      if(!d)throw new Error('Select a valid device');
+      return {d,r:estimateCharge(d,opts)};
+    } catch(e) {
+      const d=getDevice(select.value)||{brand:'Custom',model:'Current edited phone',batteryMah:'—'};
+      return {d,error:e.message};
+    }
   });
   const max=Math.max(1,...rows.filter(row=>row.r).map(row=>row.r.minutes));
   rows.forEach(({d,r,error})=>{
@@ -210,7 +222,14 @@ function renderCatalog() {
     if(d.id.startsWith('custom-')){
       const remove=document.createElement('button');remove.type='button';remove.className='remove-device';remove.textContent='Delete';
       remove.setAttribute('aria-label','Delete '+d.model);
-      remove.addEventListener('click',()=>{savedDevices=savedDevices.filter(x=>x.id!==d.id);if(!persistSaved())return;if(selectedId===d.id)selectedId=null;populateBrands('Motorola');selectDevice(defaultId);populateComparison();renderCatalog();notify('Custom device removed');});
+      remove.addEventListener('click',()=>{
+        const previous=savedDevices;
+        savedDevices=savedDevices.filter(x=>x.id!==d.id);
+        if(!persistSaved()){savedDevices=previous;return;}
+        if(selectedId===d.id){selectedId=null;populateBrands('Motorola');selectDevice(defaultId);}
+        else populateBrands($('brandSelect').value);
+        populateComparison();renderCatalog();notify('Custom device removed');
+      });
       actions.append(remove);
     }
     card.append(top,data,actions);grid.append(card);
@@ -220,10 +239,10 @@ function saveCurrentDevice(){
   try{
     const d=readCurrentDevice();
     if(savedDevices.length>=100 && !savedDevices.some(x=>x.id===selectedId))throw new Error('Maximum 100 custom profiles');
-    d.id=selectedId && selectedId.startsWith('custom-')?selectedId:'custom-'+Date.now().toString(36);
-    const index=savedDevices.findIndex(x=>x.id===d.id);
-    if(index>=0)savedDevices[index]=d;else savedDevices.push(d);
-    if(!persistSaved())return;
+    d.id=selectedId && selectedId.startsWith('custom-')?selectedId:'custom-'+(globalThis.crypto?.randomUUID?.() ?? (Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)));
+    const previous=savedDevices;
+    savedDevices=[...savedDevices.filter(x=>x.id!==d.id),d];
+    if(!persistSaved()){savedDevices=previous;return;}
     selectedId=d.id;populateBrands(d.brand);$('deviceSelect').value=d.id;
     populateComparison();renderCatalog();update();notify('Saved to this browser');
   }catch(e){showError(e.message);}
@@ -232,7 +251,7 @@ function getShareUrl(){
   const d=readCurrentDevice(),o=readOptions();
   const p=new URLSearchParams({b:d.brand,m:d.model,mah:d.batteryMah,v:d.batteryV,w:d.wiredW,ww:d.wirelessW,
     from:o.start,to:o.end,charger:o.chargerW,cable:o.cableW,method:o.method,heat:o.temperature,use:o.activity,protocol:o.compatibility});
-  const base=location.origin+location.pathname;
+  const base=location.protocol==='file:'?location.href.split(/[?#]/)[0]:location.origin+location.pathname;
   return base+'?'+p.toString()+'#calculator';
 }
 function loadQuery(){
@@ -249,9 +268,16 @@ function loadQuery(){
 }
 async function copyText(text){
   try{
-    if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');
-    await navigator.clipboard.writeText(text);notify('Copied to clipboard');
-  }catch(_){notify('Clipboard blocked — try selecting and copying the page URL');}
+    if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    else {
+      const input=document.createElement('textarea');
+      input.value=text;input.setAttribute('readonly','');input.style.cssText='position:fixed;left:-9999px;top:0';
+      document.body.append(input);input.select();
+      const copied=document.execCommand?.('copy');input.remove();
+      if(!copied)throw new Error('Clipboard unavailable');
+    }
+    notify('Copied to clipboard');
+  }catch(_){notify('Could not copy automatically. Use your browser Share or Copy Link option.');}
 }
 function exportCSV(){
   if(!latest)return notify('Calculate a result first');
@@ -266,7 +292,13 @@ function exportCSV(){
     ['Estimate high (min)',r.maxMinutes],['Estimated energy delivered (Wh)',r.deliveredWh],
     ['Disclaimer','Illustrative model only; not a device benchmark']
   ];
-  const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');
+  // Prevent spreadsheet formula injection from user-supplied phone names.
+  const csvCell=value=>{
+    const raw=String(value);
+    const safe=/^[\\s]*[=+@-]/.test(raw)?"'"+raw:raw;
+    return '"'+safe.replaceAll('"','""')+'"';
+  };
+  const csv=rows.map(row=>row.map(csvCell).join(',')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='chargescope-estimate.csv';document.body.append(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);notify('CSV downloaded');
