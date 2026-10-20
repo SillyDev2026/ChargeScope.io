@@ -34,3 +34,11 @@ html[data-theme=light]{color-scheme:light;--bg:#f6f8fd;--bg2:#eef2fb;--panel:#ff
  .result-hero strong{line-height:1.22}
 }
 @media(hover:none){.load-device,.remove-device,.secondary-button{min-height:44px}}
+
+/* Prevent long estimated time ranges from widening the iPhone viewport. */
+.compare-row strong{white-space:normal;overflow-wrap:anywhere;text-align:right;min-width:0}
+.compare-picker>.field,.compare-row>*{min-width:0}
+@media(max-width:520px){
+  .header-inner,.hero,.calc-grid,.section-title,.result-panel,.form-panel,.compare-panel{min-width:0}
+  .result-buttons{min-width:0}
+}
